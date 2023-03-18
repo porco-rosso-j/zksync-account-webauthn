@@ -1,0 +1,52 @@
+* {
+  margin: 0;
+  padding: 0;
+  outline: 0;
+  box-sizing: border-box;
+}
+
+.App {
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 40px;
+  font-size: 16px;
+}
+input{
+  padding-left: 5px;
+  font-size: 20px;
+  width: 250px;
+  height: 30px;
+}
+table{
+  width: 480px;
+  border-collapse: separate;
+}
+
+.rank{
+  text-align: center;
+  font-weight: bold;
+}
+.logo{
+  display: flex;
+  gap: 10px;
+}
+
+.symbol {
+  text-align: center;
+}
+
+#tokenlist td, #tokenlist th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+/* #tokenlist th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+  background-color: #04AA6D;
+  color: white;
+} */

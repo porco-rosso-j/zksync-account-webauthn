@@ -1,0 +1,7 @@
+artifacts-zk/
+cache-zk/
+local-setup
+node_modules/
+/.env
+typechain-types/
+.DS_Store

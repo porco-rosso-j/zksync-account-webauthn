@@ -1,0 +1,62 @@
+{
+  "name": "react-dapp-metamask-connect",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@chakra-ui/icons": "^1.0.14",
+    "@chakra-ui/react": "^1.6.5",
+    "@emotion/react": "^11.4.0",
+    "@emotion/styled": "^11.3.0",
+    "@fontsource/inter": "^4.5.0",
+    "@formspark/use-formspark": "^0.1.39",
+    "@metamask/jazzicon": "^2.0.0",
+    "@types/jest": "^26.0.15",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@types/react-table": "^7.7.14",
+    "@usedapp/core": "^1.2.7",
+    "framer-motion": "^4.1.17",
+    "patch-package": "^6.5.1",
+    "postinstall-postinstall": "^2.1.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-hot-loader": "^4.13.0",
+    "react-scripts": "5.0.1",
+    "react-social-icons": "^5.15.0",
+    "react-table": "^7.8.0",
+    "yarn": "^1.22.18"
+  },
+  "resolutions": {
+    "@ethersproject/abi": "5.2.0",
+    "@ethersproject/contracts": "5.2.0"
+  },
+  "scripts": {
+    "postinstall": "npx patch-package",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "react-router-dom": "^6.8.1",
+    "webpack-cli": "^5.0.1"
+  }
+}
