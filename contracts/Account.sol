@@ -15,7 +15,7 @@ contract Account is IAccount, IERC1271, WebAuthn {
     using TransactionHelper for Transaction;
 
     uint[2] public Q;
-
+    string public lastChallenge;
     bytes4 constant EIP1271_SUCCESS_RETURN_VALUE = 0x1626ba7e;
 
     /**
@@ -121,6 +121,7 @@ contract Account is IAccount, IERC1271, WebAuthn {
             EIP1271_SUCCESS_RETURN_VALUE
         ) {
             magic = ACCOUNT_VALIDATION_SUCCESS_MAGIC;
+            lastChallenge = getChallenge(_transaction.signature);
         } else {
             magic = bytes4(0);
         }
@@ -143,10 +144,13 @@ contract Account is IAccount, IERC1271, WebAuthn {
             string memory clientChallenge,
             uint clientChallengeDataOffset,
             uint[2] memory rs
-        ) = abi.decode(
-                _signature,
-                (bytes, bytes1, bytes, string, uint, uint[2])
-            );
+        ) = decodeSignature(_signature);
+
+        require(
+            keccak256(abi.encodePacked((clientChallenge))) !=
+                keccak256(abi.encodePacked((lastChallenge))),
+            "INVALID_CHALLENGE"
+        );
 
         bool verificationResult = validate(
             authenticatorData,
@@ -161,6 +165,34 @@ contract Account is IAccount, IERC1271, WebAuthn {
         if (!verificationResult) {
             magic = bytes4(0);
         }
+    }
+
+    function decodeSignature(
+        bytes memory _signature
+    )
+        internal
+        pure
+        returns (
+            bytes memory authenticatorData,
+            bytes1 authenticatorDataFlagMask,
+            bytes memory clientData,
+            string memory clientChallenge,
+            uint clientChallengeDataOffset,
+            uint[2] memory rs
+        )
+    {
+        return
+            abi.decode(
+                _signature,
+                (bytes, bytes1, bytes, string, uint, uint[2])
+            );
+    }
+
+    function getChallenge(
+        bytes memory _signature
+    ) internal pure returns (string memory) {
+        (, , , string memory clientChallenge, , ) = decodeSignature(_signature);
+        return clientChallenge;
     }
 
     // ---------------------------------- //
@@ -187,7 +219,7 @@ contract Account is IAccount, IERC1271, WebAuthn {
         address to = address(uint160(_transaction.to));
         bytes memory data = _transaction.data;
 
-        Address.functionDelegateCall(to, data);
+        Address.functionCall(to, data);
     }
 
     /// @notice Method that should be used to initiate a transaction from this account
