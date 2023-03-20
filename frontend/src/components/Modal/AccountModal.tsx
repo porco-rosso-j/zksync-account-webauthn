@@ -20,8 +20,8 @@ import {
 import { ExternalLinkIcon, CopyIcon } from "@chakra-ui/icons";
 import { useEthers } from "@usedapp/core";
 import Identicon from "../Identicon";
-import {AccountInfo} from "../../common/interfaces/AccountInterface"
-import {_deployAccount} from "../../common/deployAccount"
+import {AccountInfo} from "../../scripts/interfaces/AccountInterface"
+import {_deployAccount} from "../../scripts/deployAccount"
 
 type Props = {
   isOpen: any;
@@ -245,9 +245,11 @@ export default function AccountModal({ isOpen, onClose, AccountInfo, setAccountI
                     AccAddress: result[0],
                     isConnected: true,
                     WebAuthnInfo: {
-                      pubkey: result[1],
-                      authenticatorData: result[2],
-                      clientData: result[3]
+                      credentialId: result[1],
+                      pubkey: result[2],
+                      authenticatorData: result[3],
+                      clientData: result[4],
+
                     }
                   })
 

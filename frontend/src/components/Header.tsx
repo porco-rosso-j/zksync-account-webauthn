@@ -13,14 +13,10 @@ import {
 
 import AccountModal from "./Modal/AccountModal";
 import ConnectButton from "./ConnectButton";
-import {AccountInfo} from "../common/interfaces/AccountInterface"
+import {AccountInfo} from "../scripts/interfaces/AccountInterface"
 
 type Props = {
   children?: ReactNode;
-  // AccAddress: string;
-  // setAccAddress: any
-  // isConnected: boolean
-  // setIsConnected: any
   AccountInfo: AccountInfo;
   setAccountInfo: any;
 };

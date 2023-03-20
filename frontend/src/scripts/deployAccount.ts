@@ -42,50 +42,16 @@ export async function _deployAccount():Promise<any> {
     const accAddress = (await utils.getDeployedContracts(tx))[0].deployedAddress
     console.log("accAddress: ", accAddress)
 
-    return [accAddress, result?.credential.publicKey, result?.authenticatorData, result?.clientData]
+    return [
+        accAddress, 
+        result?.credential.id,
+        result?.credential.publicKey, 
+        result?.authenticatorData, 
+        result?.clientData
+    ]
 }
 
-// async function deployAccountSponsored(cordinates:BigNumber[]):Promise<string> {
-//     const salt = constants.HashZero;
-
-//     const _paymasterParams = utils.getPaymasterParams(address.paymaster, {
-//         type: "General",
-//         innerInput: new Uint8Array()
-//     } as types.GeneralPaymasterInput 
-//     );
-
-//     const _customData = {
-//         ergsPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
-//         paymasterParams: _paymasterParams,
-//     }
-
-//     const gasPrice = await provider.getGasPrice();
-//     const gasLimit = await factory.estimateGas.deployAccount(salt, [cordinates[0], cordinates[1]], {
-//         customData: _customData,
-//     });
-
-//     const create2Address = utils.create2Address(
-//         factory.address,
-//         utils.hashBytecode(accountArtifact.bytecode), // bytecodeHash
-//         ethUtils.keccak256(ethUtils.solidityPack(['uint[]'], [cordinates])), // salt
-//         []
-//       );
-
-//     const transaction = await(await factory.deployAccount(salt, [cordinates[0], cordinates[1]], {
-//         from: create2Address,
-//         maxFeePerGas: gasPrice,
-//         maxPriorityFeePerGas: gasPrice,
-//         gasLimit,
-//         customData: _customData,
-//     })).wait()
-
-//     const accAddress = (await utils.getDeployedContracts(transaction))[0].deployedAddress
-//     console.log("accAddress: ", accAddress)
-//     return accAddress
-// }
-
 const data = {
-
     challenge: webUtils.randomChallenge(),
     options: {
         authenticatorType: 'auto',

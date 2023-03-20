@@ -61,8 +61,9 @@ contract Paymaster is IPaymaster {
         // Refunds are not supported yet.
     }
 
-    function faucet(uint _amount) external {
-        payable(msg.sender).call{value: _amount}("");
+    function faucet(uint _amount) public payable {
+        (bool success, ) = payable(msg.sender).call{value: _amount}("");
+        require(success, "ETH_TRANSFER_FAILED");
     }
 
     receive() external payable {}

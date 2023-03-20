@@ -1,6 +1,6 @@
 import { Button, Box, Text, VStack } from "@chakra-ui/react";
 import { useEthers } from "@usedapp/core";
-import { ZkSyncLocal } from "../common/zkSyncLocal";
+import { ZkSyncLocal } from "../scripts/zkSyncLocal";
 import { grayed_lavender, lavender, turquoise } from "../theme";
 
 type Props = {

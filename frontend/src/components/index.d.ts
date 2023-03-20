@@ -1,4 +1,4 @@
-import {Token} from '../common/Token';
+import {Token} from '../scripts/Token';
 
 
 export declare global {

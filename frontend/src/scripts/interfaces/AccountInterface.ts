@@ -1,4 +1,5 @@
 export interface WebAuthn {
+   credentialId: string,
     pubkey: string,
     authenticatorData: string,
     clientData: string,
@@ -12,6 +13,7 @@ export interface WebAuthn {
   }
 
   const WebAuthnNull : WebAuthn = {
+    credentialId: "",
     pubkey: "",
     authenticatorData: "",
     clientData: "",

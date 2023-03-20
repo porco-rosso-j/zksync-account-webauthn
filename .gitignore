@@ -1,5 +1,6 @@
 artifacts-zk/
 cache-zk/
+contracts/.DS_Store
 local-setup
 node_modules/
 /.env

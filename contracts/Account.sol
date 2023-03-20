@@ -14,7 +14,7 @@ import "./webauthn/WebAuthn.sol";
 contract Account is IAccount, IERC1271, WebAuthn {
     using TransactionHelper for Transaction;
 
-    uint[2] public Q;
+    uint[2] public coordinates;
     string public lastChallenge;
     bytes4 constant EIP1271_SUCCESS_RETURN_VALUE = 0x1626ba7e;
 
@@ -54,9 +54,9 @@ contract Account is IAccount, IERC1271, WebAuthn {
         _;
     }
 
-    /// @param q:fsdf
-    constructor(uint[2] memory q) {
-        Q = q;
+    /// @param _coordinates:fsdf
+    constructor(uint[2] memory _coordinates) {
+        coordinates = _coordinates;
     }
 
     // ---------------------------------- //
@@ -159,7 +159,7 @@ contract Account is IAccount, IERC1271, WebAuthn {
             clientChallenge,
             clientChallengeDataOffset,
             rs,
-            Q
+            coordinates
         );
 
         if (!verificationResult) {
@@ -170,27 +170,42 @@ contract Account is IAccount, IERC1271, WebAuthn {
     function decodeSignature(
         bytes memory _signature
     )
-        internal
+        public
         pure
         returns (
+            bytes memory,
+            bytes1,
+            bytes memory,
+            string memory,
+            uint,
+            uint[2] memory
+        )
+    {
+        (
             bytes memory authenticatorData,
             bytes1 authenticatorDataFlagMask,
             bytes memory clientData,
             string memory clientChallenge,
             uint clientChallengeDataOffset,
             uint[2] memory rs
-        )
-    {
-        return
-            abi.decode(
+        ) = abi.decode(
                 _signature,
                 (bytes, bytes1, bytes, string, uint, uint[2])
             );
+
+        return (
+            authenticatorData,
+            authenticatorDataFlagMask,
+            clientData,
+            clientChallenge,
+            clientChallengeDataOffset,
+            rs
+        );
     }
 
     function getChallenge(
         bytes memory _signature
-    ) internal pure returns (string memory) {
+    ) public pure returns (string memory) {
         (, , , string memory clientChallenge, , ) = decodeSignature(_signature);
         return clientChallenge;
     }

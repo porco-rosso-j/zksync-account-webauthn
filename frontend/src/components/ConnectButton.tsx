@@ -2,7 +2,7 @@ import { Button, Box, Text, Flex, useColorMode } from "@chakra-ui/react";
 import { useEthers, useEtherBalance } from "@usedapp/core";
 import { formatEther } from "@ethersproject/units";
 import Identicon from "./Identicon";
-import {AccountInfo} from "../common/interfaces/AccountInterface"
+import {AccountInfo} from "../scripts/interfaces/AccountInterface"
 
 type Props = {
   handleOpenModal: any;
@@ -12,16 +12,16 @@ type Props = {
 
 export default function ConnectButton({ handleOpenModal, fontSize, AccountInfo }: Props) {
   const AccAddress = AccountInfo.AccAddress
-  const etherBalance = useEtherBalance( AccountInfo.isConnected ? AccAddress : null);
+ //const etherBalance = useEtherBalance( AccountInfo.isConnected ? AccAddress : null);
   const {colorMode } = useColorMode();
 
   return AccountInfo.isConnected ? (
     <Flex alignItems="center" bg={colorMode === "dark" ? "rgb(30,30,30)" : "rgb(247, 248, 250)"} borderRadius="xl" py="0" mx="1.5rem">
       <Box px="3">
-        <Text color={colorMode === "dark" ? "white" : "black"} fontSize={fontSize}>
+        {/* <Text color={colorMode === "dark" ? "white" : "black"} fontSize={fontSize}>
           {console.log("ethbalance!: ", etherBalance)}
           {etherBalance && parseFloat(formatEther(etherBalance)).toFixed(0)} ETH
-        </Text>
+        </Text> */}
       </Box>
       <Button
         onClick={handleOpenModal}

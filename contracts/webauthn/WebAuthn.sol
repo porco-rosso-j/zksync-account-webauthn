@@ -7,21 +7,7 @@ error InvalidAuthenticatorData();
 error InvalidClientData();
 error InvalidSignature();
 
-library BytesUtils {
-    function readBytes32(
-        bytes memory self,
-        uint idx
-    ) internal pure returns (bytes32 ret) {
-        require(idx + 32 <= self.length);
-        assembly {
-            ret := mload(add(add(self, 32), idx))
-        }
-    }
-}
-
-contract WebAuthn {
-    using BytesUtils for bytes;
-
+contract WebAuthn is EllipticCurve {
     function checkSignature(
         bytes memory authenticatorData,
         bytes1 authenticatorDataFlagMask,
@@ -29,7 +15,7 @@ contract WebAuthn {
         string memory clientChallenge,
         uint clientChallengeDataOffset,
         uint[2] memory rs,
-        uint[2] memory Q
+        uint[2] memory coordinates
     ) public pure returns (bool) {
         // Let the caller check if User Presence (0x01) or User Verification (0x04) are set
         if (
@@ -78,7 +64,8 @@ contract WebAuthn {
         );
 
         bytes32 message = sha256(verifyData);
-        return EllipticCurve.validateSignature(message, rs, Q);
+        //return EllipticCurve.validateSignature(message, rs, coordinates);
+        return validateSignature(message, rs, coordinates);
     }
 
     function validate(
@@ -88,7 +75,7 @@ contract WebAuthn {
         string memory clientChallenge,
         uint clientChallengeDataOffset,
         uint[2] memory rs,
-        uint[2] memory Q
+        uint[2] memory coordinates
     ) internal pure returns (bool) {
         if (
             !checkSignature(
@@ -98,7 +85,7 @@ contract WebAuthn {
                 clientChallenge,
                 clientChallengeDataOffset,
                 rs,
-                Q
+                coordinates
             )
         ) {
             revert InvalidSignature();

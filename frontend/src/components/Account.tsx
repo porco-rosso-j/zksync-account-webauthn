@@ -1,4 +1,4 @@
-import {  useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Flex,
   Box,
@@ -10,11 +10,14 @@ import {
   VStack,
   useMediaQuery,
 } from "@chakra-ui/react";
-import {AccountInfo} from "../common/interfaces/AccountInterface"
+import {AccountInfo} from "../scripts/interfaces/AccountInterface"
+import {_faucet} from "../scripts/faucet"
 import {
   useEthers,
   useEtherBalance,
 } from "@usedapp/core";
+import { BigNumber } from "ethers";
+import { Provider } from 'zksync-web3';
 
 type Props = {
   AccountInfo: AccountInfo
@@ -28,8 +31,25 @@ export default function Account({AccountInfo} : Props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { chainId } = useEthers();
   const { colorMode } = useColorMode();
-  const etherBalance = useEtherBalance((isConnected ? AccAddress: ""));
+  const [etherBalance, setEtherBalance] = useState<number>(0)
   const [isScreenFullWidth] = useMediaQuery("(min-width: 475px)");
+
+  const [faucetAmount, setFaucetAmt] = useState<number>(0)
+
+  const provider = new Provider("http://localhost:3050", 270);
+
+  useEffect(() => {
+    const timeOutId = setTimeout(async () => {
+      console.log("isConnected: ", isConnected)
+      if (isConnected) {
+        let rawQuote = await provider.getBalance(AccAddress);
+        let balance = Number(rawQuote) / 10 ** 18;
+        console.log("rawQuote: ", rawQuote)
+        setEtherBalance(balance);
+      }
+    }, 300);
+    return () => clearTimeout(timeOutId);
+  }, []);
 
   return isConnected ? (
     <Box
@@ -72,12 +92,15 @@ export default function Account({AccountInfo} : Props) {
               [Account Data]
               </Box>
               <Box color={colorMode === "dark" ? "white" : "black"}>
+              {console.log("chainId:" , chainId)}
+                {console.log("isConnected:" , isConnected)}
+                {console.log("AccAddress:" , AccAddress)}
               - address: {isConnected ? AccAddress : ""}
               </Box>
               <Box color={colorMode === "dark" ? "white" : "black"}>
               - balance: {etherBalance ? etherBalance : 0}  ETH
               </Box>
-              <Box color={colorMode === "dark" ? "white" : "black"} fontSize={15} pt={2}>
+              {/* <Box color={colorMode === "dark" ? "white" : "black"} fontSize={15} pt={2}>
               [WebAuthn Data] 
               </Box>
               <Box color={colorMode === "dark" ? "white" : "black"} fontSize={12} >
@@ -90,9 +113,9 @@ export default function Account({AccountInfo} : Props) {
               - clientData:  {AccountInfo.WebAuthnInfo.clientData}
               </Box>
             <Box color={colorMode === "dark" ? "white" : "black"} fontSize={12}>
-              - signature:
+              - signature: {AccountInfo.WebAuthnInfo.signature}
             </Box>
-            {/* credentialId */}
+            credentialId */}
            </VStack>
           )}
           
@@ -126,7 +149,17 @@ export default function Account({AccountInfo} : Props) {
                   textDecoration: "underline",
                 }}
                 onClick={async function()  {
-                 // setIsConnected({isConnected: !isConnected})
+                  console.log("faucetAmount: ", faucetAmount)
+                   faucetAmount ? await _faucet(
+                    AccountInfo.AccAddress,
+                    faucetAmount,
+                    AccountInfo.WebAuthnInfo
+                  ) : console.log("number not set") ;
+
+                  const rawQuote = await provider.getBalance(AccAddress);
+                  console.log("rawQuote: ", rawQuote)
+                  let balance = Number(rawQuote) / 10 ** 18;
+                  setEtherBalance(balance);
                 }} >
                  Get faucet ETH
           </Button>
@@ -136,17 +169,15 @@ export default function Account({AccountInfo} : Props) {
           width="40%"
           size="30rem"
           textAlign="center"
-          //borderColor="rgb(236, 236, 236)"
           focusBorderColor="blue"
-          //borderWidth= "1px"
-          type="number"
+          type= "number"
           color={colorMode === "dark" ? "white" : "black"}
           onChange={async function (e) {
             if (
               e.target.value !== undefined 
-              && !isConnected
+              && isConnected
             ) {
-              //setAccAddress(e.target.value);
+               setFaucetAmt(Number(e.target.value));
             } else {
             }
           }}
@@ -155,10 +186,8 @@ export default function Account({AccountInfo} : Props) {
 
         </Box>
       </Box>
-
-
     </Box>
-  ) : <Text align={"center"}>
-    Connect your wallet!
+  ) : <Text align={"center"} fontSize={25} pt={100}>
+    Sign Ethereum transactions with your fingerprint.  No private key needed.
   </Text> ;
 }
