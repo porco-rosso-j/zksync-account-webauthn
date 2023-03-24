@@ -236,20 +236,24 @@ contract MerkleRecoveryAA is IAccount, IERC1271, WebAuthn {
     /// @param _transaction The transaction to execute.
     /// @dev _transaction has three additional fields: merkleRoot, password and proof
     function _executeTransaction(Transaction calldata _transaction) internal {
-        (, , , , , , uint[2] memory _coordinates) = decodeSignature(_transaction.signature);
-        // Set merkleRoot if it has not been set and tx is sent from public key holder
-        if (merkleRoot == 0 && coordinates[0] == _coordinates[0] && coordinates[1] == _coordinates[1] && _transaction.merkleRoot != 0) {
-            merkleRoot = _transaction.merkleRoot;
-        // Change public key holder if password and proof are valid for the merkleRoot
-        } else if (merkleRoot != 0 && _verifyPassword(_transaction.password, _transaction.proof)) {
-            merkleRoot = _transaction.merkleRoot;
-            coordinates[0] = _coordinates[0];
-            coordinates[1] = _coordinates[1];
-        // Execute calldata
-        } else {
-            address to = address(uint160(_transaction.to));
-            bytes memory data = _transaction.data;
-            Address.functionCall(to, data);
+        (, , , , , , uint[2] memory _signatureCoordinates) = decodeSignature(_transaction.signature);
+
+        // The signature sender must prove that they are the public key holder for this contract
+        if (coordinates[0] == _signatureCoordinates[0] && coordinates[1] == _signatureCoordinates[1]) {
+            bytes32 calldataPrefix = bytes32(_transaction.data[:32]);
+            // New coordinates are sent as bytes in _transaction.data. In order to distinguish between the changing of coordinates and a regular function call, the following bytes32 value is added when changing coordinates.
+            // '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF'
+            // Note: it is possible that a function call could begin with these 32 bytes, but the chances are low.
+            bytes32 maxValue = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
+
+            if (calldataPrefix == maxValue) {
+                (, uint[2] memory newCoordinates) = abi.decode(_transaction.data, (bytes32, uint[2]));
+                coordinates = newCoordinates;
+            } else {
+                address to = address(uint160(_transaction.to));
+                bytes memory data = _transaction.data;
+                Address.functionCall(to, data);
+            }
         }
     }
 

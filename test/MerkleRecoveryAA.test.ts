@@ -19,23 +19,23 @@ describe('MerkleRecoveryAA', () => {
     let factory;
     let aaFactoryArtifact;
     let wallet; 
+
     beforeEach(async () => {
-    const provider = Provider.getDefaultProvider();
-    wallet = new Wallet(RICH_WALLET.privateKey, provider);
-    const deployer = new Deployer(hre, wallet);
+        const provider = Provider.getDefaultProvider();
+        wallet = new Wallet(RICH_WALLET.privateKey, provider);
+        const deployer = new Deployer(hre, wallet);
+        // Factory
+        aaFactoryArtifact = await deployer.loadArtifact('AAFactory');
+        const aaArtifact = await deployer.loadArtifact('MerkleRecoveryAA');
+        const aaBytecodehash = utils.hashBytecode(aaArtifact.bytecode);
+        factory = await deployer.deploy(
+            aaFactoryArtifact,
+            [aaBytecodehash],
+            undefined,
+            [aaArtifact.bytecode]
+            );
 
-    aaFactoryArtifact = await deployer.loadArtifact('AAFactory');
-    const aaArtifact = await deployer.loadArtifact('MerkleRecoveryAA');
-    const aaBytecodehash = utils.hashBytecode(aaArtifact.bytecode);
-    factory = await deployer.deploy(
-        aaFactoryArtifact,
-        [aaBytecodehash],
-        undefined,
-        [aaArtifact.bytecode]
-        );
-    });
-
-    it('should deploy AA account', async () => {
+        // AA
         const aaFactory = new ethers.Contract(
             factory.address,
             aaFactoryArtifact.abi,
@@ -46,13 +46,7 @@ describe('MerkleRecoveryAA', () => {
 
         function bufferFromBase64(value) {
             return Buffer.from(value, "base64")
-        }
-
-        // function bufferToHex (buffer) {
-        //     return ("0x").concat([...new Uint8Array (buffer)]
-        //     .map (b => b.toString (16).padStart (2, "0"))
-        //     .join (""));
-        // }
+        };
 
         async function getKey(pubkey) {
             const algoParams = {
@@ -70,22 +64,28 @@ describe('MerkleRecoveryAA', () => {
         const pubkeyUintArray = [ 
         ethers.BigNumber.from(ethers.utils.hexlify(bufferFromBase64(x))),
         ethers.BigNumber.from(ethers.utils.hexlify(bufferFromBase64(y)))
-    ]
+        ]
 
         const tx = await aaFactory.deployAccount(
-          salt,
-          pubkeyUintArray
-        );
-        await tx.wait();
+            salt,
+            pubkeyUintArray
+          );
+          await tx.wait();
+  
+          const abiCoder = new ethers.utils.AbiCoder();
+          const accountAddress = utils.create2Address(
+            factory.address,
+            await aaFactory.merkleRecoveryBytecodeHash(),
+            salt,
+            abiCoder.encode(['bytes32', 'uint256[2]'], [salt, pubkeyUintArray])
+          );
+          console.log(`Account deployed on address ${accountAddress}`);
+    });
 
-        const abiCoder = new ethers.utils.AbiCoder();
-        const accountAddress = utils.create2Address(
-          factory.address,
-          await aaFactory.merkleRecoveryBytecodeHash(),
-          salt,
-          abiCoder.encode(['bytes32', 'uint256[2]'], [salt, pubkeyUintArray])
-        );
-        console.log(`Account deployed on address ${accountAddress}`);
+    it('should deploy AA account', async () => {
+
+
+
 
     });
 
