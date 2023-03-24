@@ -8,16 +8,16 @@ import {
   Text,
   useColorMode,
   VStack,
-  useMediaQuery,
+  useMediaQuery,Center,
 } from "@chakra-ui/react";
 import {AccountInfo} from "../scripts/interfaces/AccountInterface"
 import {_faucet} from "../scripts/faucet"
 import {
   useEthers,
-  useEtherBalance,
 } from "@usedapp/core";
-import { BigNumber } from "ethers";
 import { Provider } from 'zksync-web3';
+import ConnectButton from "./ConnectButton";
+import {getFontSize} from "../scripts/utils/lib";
 
 type Props = {
   AccountInfo: AccountInfo
@@ -183,11 +183,25 @@ export default function Account({AccountInfo} : Props) {
           }}
           />
          </VStack>
-
         </Box>
       </Box>
     </Box>
-  ) : <Text align={"center"} fontSize={25} pt={100}>
-    Sign Ethereum transactions with your fingerprint.  No private key needed.
-  </Text> ;
+  ) :
+  ( <Box mt={"150px"}>
+      <Center >
+          <Text fontSize={25} pt={100}>
+            Sign Ethereum transactions with your fingerprint.  No private key needed.
+          </Text>
+      </Center>
+      <Center>
+          <ConnectButton
+                        handleOpenModal={onOpen}
+                        fontSize={getFontSize(isScreenFullWidth)}
+                        AccountInfo={AccountInfo}
+              />
+      </Center>
+    </Box>
+
+    )
+   ;
 }

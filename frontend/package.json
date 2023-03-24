@@ -21,6 +21,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-hot-loader": "^4.13.0",
+    "react-icons": "^4.8.0",
     "react-scripts": "5.0.1",
     "react-social-icons": "^5.15.0",
     "react-table": "^7.8.0",

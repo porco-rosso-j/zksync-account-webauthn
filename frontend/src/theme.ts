@@ -22,7 +22,7 @@ const styles = {
       // color: mode('gray.800', 'whiteAlpha.900')(props),
       // background: mode('#f2f2f2', '#292929')(props),
       color: mode('gray.800', 'whiteAlpha.900')(props),
-      bg: mode('#f2f2f2', '#292929')(props),
+      bg: mode('#f1f0ea', '#292929')(props),
     },
     '*::placeholder': {
       color: mode('gray.400', 'whiteAlpha.600')(props),
