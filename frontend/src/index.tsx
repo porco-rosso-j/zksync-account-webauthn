@@ -4,7 +4,7 @@ import App from "./App";
 import { DAppProvider, Config, MetamaskConnector } from "@usedapp/core";
 import { ColorModeScript } from "@chakra-ui/react";
 import theme from './theme'
-import { ZkSyncLocal } from "./scripts/zkSyncLocal";
+import { ZkSyncLocal } from "./scripts/utils/zkSyncLocal";
 
 const config: Config = {
   networks: [ZkSyncLocal],
