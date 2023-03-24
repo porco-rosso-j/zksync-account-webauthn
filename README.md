@@ -12,7 +12,7 @@ cd local-setup
 
 ### deploy
 
-create .env file and add the line `NODE_ENV="local"`.
+create .env file and add the line `NODE_ENV="test"`.
 
 then run:
 
