@@ -1,4 +1,5 @@
 import { HardhatUserConfig } from 'hardhat/config';
+import "@nomiclabs/hardhat-ethers";
 import "@matterlabs/hardhat-zksync-chai-matchers";
 import "@matterlabs/hardhat-zksync-toolbox";
 import "@matterlabs/hardhat-zksync-deploy";
