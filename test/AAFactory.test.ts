@@ -2,7 +2,6 @@ import { expect } from "chai";
 import { Wallet, Provider, Contract, utils } from "zksync-web3";
 import * as hre from "hardhat";
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
-import {loadFixture} from "@nomicfoundation/hardhat-network-helpers"
  
 const RICH_WALLET = {
   address: "0x36615Cf349d7F6344891B1e7CA7C72883F5dc049",
@@ -10,30 +9,30 @@ const RICH_WALLET = {
 };
 // "address": "0xa61464658AfeAf65CccaaFD3a512b69A83B77618"
 // "privateKey": "0xac1e735be8536c6534bb4f17f06f6afc73b2b5ba84ac2cfb12f7461b20c0bbe3"
-async function deploy() {
+
+
+   
+describe('AAFactory', () => {
+    let aaFactory;
+
+    beforeEach(async () => {
     const provider = Provider.getDefaultProvider();
     const wallet = new Wallet(RICH_WALLET.privateKey, provider);
     const deployer = new Deployer(hre, wallet);
-   
-    const mrfaaArtifact = await deployer.loadArtifact('MerkleRecoveryFactoryAA');
-    const mraaArtifact = await deployer.loadArtifact('MerkleRecoveryAA');
-    const mraaBytecodehash = utils.hashBytecode(mraaArtifact.bytecode);
-    const mrfAA = deployer.deploy(
-        mrfaaArtifact,
-        [mraaBytecodehash],
+
+    const aaFactoryArtifact = await deployer.loadArtifact('AAFactory');
+    const aaArtifact = await deployer.loadArtifact('MerkleRecoveryAA');
+    const aaBytecodehash = utils.hashBytecode(aaArtifact.bytecode);
+    aaFactory = await deployer.deploy(
+        aaFactoryArtifact,
+        [aaBytecodehash],
         undefined,
-        [mraaArtifact.bytecode]
+        [aaArtifact.bytecode]
         );
-   
-    return {mrfAA};
-  };
-   
-  describe('MerkleRecoveryFactoryAA', () => {
-    it('should deploy', async () => {
-      const {mrfAA} = await loadFixture(deploy);
-      console.log(mrfAA);
     });
 
+    it('should deploy', async () => {
+        console.log(`aa address: ${aaFactory.address}`);
+    });
 
-    
-  });
+});
