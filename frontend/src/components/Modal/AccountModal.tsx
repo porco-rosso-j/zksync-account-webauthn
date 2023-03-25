@@ -14,14 +14,15 @@ import {
   Text,
   useColorMode,
   VStack,
-  HStack,
+  HStack,useMediaQuery,
 } from "@chakra-ui/react";
 
 import { ExternalLinkIcon, CopyIcon } from "@chakra-ui/icons";
 import { useEthers } from "@usedapp/core";
 import Identicon from "../Identicon";
 import {AccountInfo} from "../../scripts/interfaces/AccountInterface"
-import {_deployAccount} from "../../scripts/deployAccount"
+import {_deployAccount} from "../../scripts/deployAccount";
+import {getFontSize} from "../../scripts/utils/lib";
 
 type Props = {
   isOpen: any;
@@ -32,6 +33,7 @@ type Props = {
 
 export default function AccountModal({ isOpen, onClose, AccountInfo, setAccountInfo }: Props) {
   const AccAddress = AccountInfo.AccAddress
+  const [isScreenFullWidth] = useMediaQuery("(min-width: 475px)");
   const isConnected = AccountInfo.isConnected
 
   const { account, deactivate } = useEthers();
@@ -258,6 +260,17 @@ export default function AccountModal({ isOpen, onClose, AccountInfo, setAccountI
                   } 
               }, 300);
               return () => clearTimeout(timeOutId);
+          }}
+          bg="#C5CBE3"
+          color="#4056A1"
+          fontWeight="semibold"
+          borderRadius="xl"
+          border="0.06rem solid #C5CBE3"
+          _hover={{
+            borderColor: "#4056A1",
+          }}
+          _active={{
+            borderColor: "#4056A1",
           }}
            >
             Create your wallet

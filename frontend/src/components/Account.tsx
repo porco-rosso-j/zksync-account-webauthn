@@ -22,6 +22,7 @@ import { Provider } from 'zksync-web3';
 import ConnectButton from "./ConnectButton";
 import {getFontSize} from "../scripts/utils/lib";
 import AccountModal from "./Modal/AccountModal";
+import { AccountInfoNull} from "../scripts/interfaces/AccountInterface"
 
 type Props = {
   AccountInfo: AccountInfo
@@ -37,7 +38,6 @@ export default function Account({AccountInfo,setAccountInfo} : Props) {
   const [etherBalance, setEtherBalance] = useState<number>(0)
   const [etherBalance2, setEtherBalance2] = useState<number>(0)
   const [isScreenFullWidth] = useMediaQuery("(min-width: 475px)");
-  const [isScreenSmallWidth] = useMediaQuery("(min-width: 380px)");
 
   const [faucetAmount, setFaucetAmt] = useState<number>(0)
   const [transferAmount, setTransferAmount] = useState<number>(0)
@@ -71,10 +71,12 @@ export default function Account({AccountInfo,setAccountInfo} : Props) {
     return () => clearTimeout(timeOutId);
   }, []);
 
-
+ function handleDeactivateAccount() {
+    setAccountInfo({isConnected: false})
+  }
   return isConnected ? (
     <Box
-      w={isScreenFullWidth ? "475px" : "calc(98vw)"}
+      w={isScreenFullWidth ? "600px" : "calc(98vw)"}
       mx="auto"
       mt="3.5rem"
       mb="1.5rem"
@@ -110,15 +112,15 @@ export default function Account({AccountInfo,setAccountInfo} : Props) {
              borderRadius="3"
              >
               <Box color={colorMode === "dark" ? "white" : "black"} fontSize={15} >
-              [Account Data]
+              Account Data
               </Box>
               <Box color={colorMode === "dark" ? "white" : "black"}>
                 {console.log("isConnected:" , isConnected)}
                 {console.log("AccAddress:" , AccAddress)}
-              - address: {isConnected ? AccAddress : ""}
+              Wallet address: {isConnected ? AccAddress : ""}
               </Box>
               <Box color={colorMode === "dark" ? "white" : "black"}>
-              - balance: {etherBalance ? etherBalance : 0}  ETH
+              Wallet balance: {etherBalance ? etherBalance : 0}  ETH
               </Box>
            </VStack>
           )}
@@ -135,37 +137,9 @@ export default function Account({AccountInfo,setAccountInfo} : Props) {
             mb={5}
           >
            <VStack alignItems={"center"}  align='stretch' spacing={3} mb={3} >
-        <Button
-                //variant="outline"
-                size="small"
-                // borderRadius="3xl"
-                fontSize="0.8rem"
-                fontWeight="normal"
-               // borderColor="rgb(236, 236, 236)"
-                color="rgb(30, 114, 32)"
-                px={58}
-                py={4}
-                h="1.62rem"
-                _hover={{
-                  background: "none",
-                  borderColor: "rgb(56, 165, 58)",
-                  textDecoration: "underline",
-                }}
-                onClick={async function()  {
-                  console.log("faucetAmount: ", faucetAmount)
-                   faucetAmount ? await _faucet(
-                    AccountInfo.AccAddress,
-                    faucetAmount,
-                    AccountInfo.WebAuthnInfo
-                  ) : console.log("number not set") ;
-
-                  const rawQuote = await provider.getBalance(AccAddress);
-                  console.log("rawQuote: ", rawQuote)
-                  let balance = Number(rawQuote) / 10 ** 18;
-                  setEtherBalance(balance);
-                }} >
-                 Get faucet ETH
-          </Button>
+               <Text fontSize="sm">
+                  Enter amount of Faucet ETH you would like to receive
+               </Text>
           <Input
           placeholder="0.0"
           fontSize="md"
@@ -185,6 +159,41 @@ export default function Account({AccountInfo,setAccountInfo} : Props) {
             }
           }}
           />
+          <Button
+              bg="#C5CBE3"
+              color="#4056A1"
+              fontWeight="semibold"
+              borderRadius="xl"
+              border="0.06rem solid #C5CBE3"
+              _hover={{
+                borderColor: "#4056A1",
+              }}
+              _active={{
+                borderColor: "#4056A1",
+              }}
+                //variant="outline"
+                size="small"
+                // borderRadius="3xl"
+               // borderColor="rgb(236, 236, 236)"
+                px={58}
+                py={4}
+                fontSize="0.8rem"
+                h="1.62rem"
+                onClick={async function()  {
+                  console.log("faucetAmount: ", faucetAmount)
+                   faucetAmount ? await _faucet(
+                    AccountInfo.AccAddress,
+                    faucetAmount,
+                    AccountInfo.WebAuthnInfo
+                  ) : console.log("number not set") ;
+
+                  const rawQuote = await provider.getBalance(AccAddress);
+                  console.log("rawQuote: ", rawQuote)
+                  let balance = Number(rawQuote) / 10 ** 18;
+                  setEtherBalance(balance);
+                }} >
+                 Get faucet ETH
+          </Button>
          </VStack>
         </Box>
 
@@ -200,34 +209,9 @@ export default function Account({AccountInfo,setAccountInfo} : Props) {
             mb={5}
           >
            <VStack alignItems={"center"}  align='stretch' spacing={3} mb={3} >
-        <Button
-                size="small"
-                fontSize="0.8rem"
-                fontWeight="normal"
-                color="rgb(30, 114, 32)"
-                px={58}
-                py={4}
-                h="1.62rem"
-                _hover={{
-                  background: "none",
-                  borderColor: "rgb(56, 165, 58)",
-                  textDecoration: "underline",
-                }}
-                onClick={async function()  {
-                  recepient && transferAmount  ? await _transferETH(
-                    AccountInfo.AccAddress,
-                    recepient,
-                    transferAmount,
-                    AccountInfo.WebAuthnInfo
-                  ) : console.log("number not set") ;
-
-                  const rawQuote = await provider.getBalance(AccAddress);
-                  console.log("rawQuote: ", rawQuote)
-                  let balance = Number(rawQuote) / 10 ** 18;
-                  setEtherBalance(balance);
-                }} >
-                 Send ETH
-          </Button>
+            <Text fontSize="sm">
+                  Enter the recipient and amount you would like to send
+            </Text>
           <HStack spacing={1} >
           <Text pl={20} pr={5}>Amount: </Text>
           <Input
@@ -251,7 +235,7 @@ export default function Account({AccountInfo,setAccountInfo} : Props) {
           />
           </HStack>
           <HStack spacing={1} >
-          <Text pl={20} pr={5}>Recepient: </Text>
+          <Text pl={20} pr={5}>Recipient: </Text>
           <Input
           placeholder="0x..."
           fontSize="md"
@@ -281,11 +265,62 @@ export default function Account({AccountInfo,setAccountInfo} : Props) {
           }}
           />
           </HStack>
+          <Button
+          bg="#C5CBE3"
+              color="#4056A1"
+              fontWeight="semibold"
+              borderRadius="xl"
+              border="0.06rem solid #C5CBE3"
+              _hover={{
+                borderColor: "#4056A1",
+              }}
+              _active={{
+                borderColor: "#4056A1",
+              }}
+                size="small"
+                fontSize="0.8rem"
+                px={58}
+                py={4}
+                h="1.62rem"
+                onClick={async function()  {
+                  recepient && transferAmount  ? await _transferETH(
+                    AccountInfo.AccAddress,
+                    recepient,
+                    transferAmount,
+                    AccountInfo.WebAuthnInfo
+                  ) : console.log("number not set") ;
+
+                  const rawQuote = await provider.getBalance(AccAddress);
+                  console.log("rawQuote: ", rawQuote)
+                  let balance = Number(rawQuote) / 10 ** 18;
+                  setEtherBalance(balance);
+                }} >
+                 Send ETH
+          </Button>
           <Box color={colorMode === "dark" ? "white" : "black"}>
-             Recepient ETH Balance: {etherBalance2 ? etherBalance2 : 0}  ETH
+             Recipient ETH Balance: {etherBalance2 ? etherBalance2 : 0}  ETH
               </Box>
          </VStack>
         </Box>
+        <Center>
+            <Button
+              onClick={handleDeactivateAccount}
+              bg="#f13c2054"
+              color="#F13C20"
+              fontWeight="semibold"
+              borderRadius="xl"
+              border="0.06rem solid #f13c2054"
+              _hover={{
+                borderColor: "#F13C20",
+              }}
+              _active={{
+                borderColor: "#F13C20",
+              }}
+            >
+              Disconnect Wallet
+            </Button>
+        </Center>
+
       </Box>
     </Box>
   ) :
@@ -314,7 +349,6 @@ export default function Account({AccountInfo,setAccountInfo} : Props) {
             />
       </Center>
     </VStack>
-
     )
    ;
 }
