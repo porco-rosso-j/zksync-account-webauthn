@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import "@matterlabs/zksync-contracts/l2/system-contracts/Constants.sol";
 import "@matterlabs/zksync-contracts/l2/system-contracts/libraries/SystemContractsCaller.sol";
 
-contract AAFactory {
+contract TransferableAAFactory {
     bytes32 public merkleRecoveryBytecodeHash;
  
     constructor(bytes32 _merkleRecoveryBytecodeHash) {

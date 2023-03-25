@@ -1,20 +1,18 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.0;
  
+import "@matterlabs/zksync-contracts/l2/system-contracts/interfaces/IAccount.sol";
 import "@matterlabs/zksync-contracts/l2/system-contracts/libraries/SystemContractsCaller.sol";
 import "@matterlabs/zksync-contracts/l2/system-contracts/libraries/SystemContractHelper.sol";
+import "@matterlabs/zksync-contracts/l2/system-contracts/libraries/TransactionHelper.sol";
 import "@matterlabs/zksync-contracts/l2/system-contracts/Constants.sol";
 import "@matterlabs/zksync-contracts/l2/system-contracts/openzeppelin/utils/Address.sol";
 import "@openzeppelin/contracts/interfaces/IERC1271.sol";
-import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-import "./MerkleTransactionHelper.sol";
-import "./IAccount.sol";
 import "../webauthn/WebAuthn.sol";
  
-contract MerkleRecoveryAA is IAccount, IERC1271, WebAuthn {
-    using MerkleTransactionHelper for Transaction;
+contract TransferableAA is IAccount, IERC1271, WebAuthn {
+    using TransactionHelper for Transaction;
  
-    bytes32 public merkleRoot;
     uint[2] public coordinates;
     string public lastChallenge;
     bytes4 constant EIP1271_SUCCESS_RETURN_VALUE = 0x1626ba7e;
@@ -207,7 +205,7 @@ contract MerkleRecoveryAA is IAccount, IERC1271, WebAuthn {
     function getChallenge(
         bytes memory _signature
     ) public pure returns (string memory) {
-        (, , , string memory clientChallenge, ,) = decodeSignature(_signature);
+        (, , , string memory clientChallenge, , ) = decodeSignature(_signature);
         return clientChallenge;
     }
  
@@ -230,7 +228,7 @@ contract MerkleRecoveryAA is IAccount, IERC1271, WebAuthn {
  
     /// @notice Inner method for executing a transaction.
     /// @param _transaction The transaction to execute.
-    /// @dev _transaction has three additional fields: merkleRoot, password and proof
+    /// @dev it executes multicall if isBatched returns true and delegatecalls if _transaction.to is a module
     function _executeTransaction(Transaction calldata _transaction) internal {
         bytes32 calldataPrefix = bytes32(_transaction.data[:32]);
         // New coordinates are sent as bytes in _transaction.data. In order to distinguish between the changing of coordinates and a regular function call, the following bytes32 value is added when changing coordinates.
@@ -247,19 +245,8 @@ contract MerkleRecoveryAA is IAccount, IERC1271, WebAuthn {
             Address.functionCall(to, data);
         }
     }
-
-    /// @notice Check if a password is a leaf that makes the merkle root
-    /// @param _password Must be hashed
-    /// @param _proof Generated offchain using the array of passwords
-    function _verifyPassword(string memory _password, bytes32[] memory _proof)
-        internal
-        view
-        returns (bool)
-    {
-        bytes32 hashedPassword = keccak256(abi.encodePacked(_password));
-        return MerkleProof.verify(_proof, merkleRoot, hashedPassword);
-    }
-        /// @notice Method that should be used to initiate a transaction from this account
+ 
+    /// @notice Method that should be used to initiate a transaction from this account
     /// by an external call. This is not mandatory but should be implemented so that
     /// it is always possible to execute transactions from L1 for this account.
     /// @dev This method is basically validate + execute.
@@ -270,7 +257,7 @@ contract MerkleRecoveryAA is IAccount, IERC1271, WebAuthn {
         _validateTransaction(bytes32(0), _transaction);
         _executeTransaction(_transaction);
     }
- 
+    
     // ---------------------------------- //
     //               Others               //
     // ---------------------------------- //
