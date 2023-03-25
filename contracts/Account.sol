@@ -15,7 +15,7 @@ contract Account is IAccount, IERC1271, WebAuthn {
     using TransactionHelper for Transaction;
 
     uint[2] public coordinates;
-    string public lastChallenge;
+    //string public lastChallenge;
     bytes4 constant EIP1271_SUCCESS_RETURN_VALUE = 0x1626ba7e;
 
     /**
@@ -121,7 +121,7 @@ contract Account is IAccount, IERC1271, WebAuthn {
             EIP1271_SUCCESS_RETURN_VALUE
         ) {
             magic = ACCOUNT_VALIDATION_SUCCESS_MAGIC;
-            lastChallenge = getChallenge(_transaction.signature);
+            //lastChallenge = getChallenge(_transaction.signature);
         } else {
             magic = bytes4(0);
         }
@@ -146,11 +146,11 @@ contract Account is IAccount, IERC1271, WebAuthn {
             uint[2] memory rs
         ) = decodeSignature(_signature);
 
-        require(
-            keccak256(abi.encodePacked((clientChallenge))) !=
-                keccak256(abi.encodePacked((lastChallenge))),
-            "INVALID_CHALLENGE"
-        );
+        // require(
+        //     keccak256(abi.encodePacked((clientChallenge))) !=
+        //         keccak256(abi.encodePacked((lastChallenge))),
+        //     "INVALID_CHALLENGE"
+        // );
 
         bool verificationResult = validate(
             authenticatorData,
@@ -233,8 +233,14 @@ contract Account is IAccount, IERC1271, WebAuthn {
     function _executeTransaction(Transaction calldata _transaction) internal {
         address to = address(uint160(_transaction.to));
         bytes memory data = _transaction.data;
+        uint value = _transaction.value;
 
-        Address.functionCall(to, data);
+        if (value != 0 && data.length == 0) {
+            Address.sendValue(payable(to), value);
+            //Address.functionCallWithValue(to, data, value);
+        } else {
+            Address.functionCall(to, data);
+        }
     }
 
     /// @notice Method that should be used to initiate a transaction from this account
