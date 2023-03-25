@@ -117,4 +117,47 @@ contract WebAuthn is EllipticCurve {
         }
         return _to;
     }
+
+    function decodeSignature(
+        bytes memory _signature
+    )
+        public
+        pure
+        returns (
+            bytes memory,
+            bytes1,
+            bytes memory,
+            string memory,
+            uint,
+            uint[2] memory
+        )
+    {
+        (
+            bytes memory authenticatorData,
+            bytes1 authenticatorDataFlagMask,
+            bytes memory clientData,
+            string memory clientChallenge,
+            uint clientChallengeDataOffset,
+            uint[2] memory rs
+        ) = abi.decode(
+                _signature,
+                (bytes, bytes1, bytes, string, uint, uint[2])
+            );
+
+        return (
+            authenticatorData,
+            authenticatorDataFlagMask,
+            clientData,
+            clientChallenge,
+            clientChallengeDataOffset,
+            rs
+        );
+    }
+
+    function getChallenge(
+        bytes memory _signature
+    ) public pure returns (string memory) {
+        (, , , string memory clientChallenge, , ) = decodeSignature(_signature);
+        return clientChallenge;
+    }
 }

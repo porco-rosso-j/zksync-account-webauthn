@@ -3,7 +3,7 @@ import {address} from "../utils/address"
 import {Provider, utils, types} from 'zksync-web3';
 
 // gas limit is 10M as signature verification using ECDSA with p256 curve costs at least 7-8M gas
-const gasLimit = ethers.utils.hexlify(10000000) 
+const gasLimit = ethers.utils.hexlify(12000000) 
 const provider = new Provider("http://localhost:3050", 270);
 
 export async function getEIP712TxRequest(_from:string, _to: string, _calldata: ethers.BytesLike, _customData:types.Eip712Meta):Promise<types.TransactionRequest> {
