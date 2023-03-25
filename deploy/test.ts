@@ -11,14 +11,14 @@ export default async function deployAll (hre: HardhatRuntimeEnvironment) {
     const wallet = new Wallet(rich_wallet[0].privateKey, provider);
     const deployer = new Deployer(hre, wallet);
     
-    // Deploy AccountFactory
-    // const accountArtifact = await deployer.loadArtifact("Account");
+   // Deploy AccountFactory
+    const accountArtifact = await deployer.loadArtifact("Account");
 
-    // const account = new Contract(
-    //     "0x025314E1aa058fb7054C56982a3Cec45F9e3D0a1", 
-    //     accountArtifact.abi,
-    //     wallet
-    //     )
+    const account = new Contract(
+        "0x6B6C200cBfFA985cE0CA357f3CFb07959CB8a7b7", 
+        accountArtifact.abi,
+        wallet
+        )
 
     // // const coordinates0 = await account.callStatic.Q(0)
     // // const coordinates1 = await account.callStatic.Q(1)
@@ -33,7 +33,13 @@ export default async function deployAll (hre: HardhatRuntimeEnvironment) {
 
     // console.log("sig: ", sig)
 
-    console.log("bal: ", await provider.getBalance("0x3058227C7Ff4AeA070fB399de1e7C37364431cf6"))
+    const hash = await account.callStatic.checkPosition(ethers.utils.arrayify(
+        "0xf6c19ebd96ff1a3446a6a75317baba368c6351fb6e776d00f3cd69e476a4fce900000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000024579158970000000000000000000000000000000000000000000000000de0b6b3a764000000000000000000000000000000000000000000000000000000000000"
+    ))
+
+   console.log("hash: ", hash)
+
+   //console.log("hash w/ 0x: ", hash.slice(2))
 }
 
 

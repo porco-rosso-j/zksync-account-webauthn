@@ -8,15 +8,11 @@ import {
   Text,
   useColorMode,
   VStack,
+  HStack,
   useMediaQuery,
 } from "@chakra-ui/react";
 import {AccountInfo} from "../scripts/interfaces/AccountInterface"
-import {_faucet} from "../scripts/faucet"
-import {
-  useEthers,
-  useEtherBalance,
-} from "@usedapp/core";
-import { BigNumber } from "ethers";
+import { _faucet, _transferETH, _enabledLocation} from "../scripts/methods"
 import { Provider } from 'zksync-web3';
 
 type Props = {
@@ -28,13 +24,15 @@ export default function Account({AccountInfo} : Props) {
   const AccAddress = AccountInfo.AccAddress
   const isConnected = AccountInfo.isConnected
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const { chainId } = useEthers();
+  // const { isOpen, onOpen, onClose } = useDisclosure();
   const { colorMode } = useColorMode();
   const [etherBalance, setEtherBalance] = useState<number>(0)
+  const [etherBalance2, setEtherBalance2] = useState<number>(0)
   const [isScreenFullWidth] = useMediaQuery("(min-width: 475px)");
 
   const [faucetAmount, setFaucetAmt] = useState<number>(0)
+  const [transferAmount, setTransferAmount] = useState<number>(0)
+  const [recepient, setRecepient] = useState<string>("")
 
   const provider = new Provider("http://localhost:3050", 270);
 
@@ -50,6 +48,20 @@ export default function Account({AccountInfo} : Props) {
     }, 300);
     return () => clearTimeout(timeOutId);
   }, []);
+
+  useEffect(() => {
+    const timeOutId = setTimeout(async () => {
+      console.log("isConnected: ", isConnected)
+      if (isConnected && recepient) {
+        let rawQuote = await provider.getBalance(recepient);
+        let balance = Number(rawQuote) / 10 ** 18;
+        console.log("rawQuote: ", rawQuote)
+        setEtherBalance2(balance);
+      }
+    }, 300);
+    return () => clearTimeout(timeOutId);
+  }, []);
+
 
   return isConnected ? (
     <Box
@@ -92,7 +104,6 @@ export default function Account({AccountInfo} : Props) {
               [Account Data]
               </Box>
               <Box color={colorMode === "dark" ? "white" : "black"}>
-              {console.log("chainId:" , chainId)}
                 {console.log("isConnected:" , isConnected)}
                 {console.log("AccAddress:" , AccAddress)}
               - address: {isConnected ? AccAddress : ""}
@@ -100,25 +111,8 @@ export default function Account({AccountInfo} : Props) {
               <Box color={colorMode === "dark" ? "white" : "black"}>
               - balance: {etherBalance ? etherBalance : 0}  ETH
               </Box>
-              {/* <Box color={colorMode === "dark" ? "white" : "black"} fontSize={15} pt={2}>
-              [WebAuthn Data] 
-              </Box>
-              <Box color={colorMode === "dark" ? "white" : "black"} fontSize={12} >
-              - PublicKey: {AccountInfo.WebAuthnInfo.pubkey}
-              </Box>
-              <Box color={colorMode === "dark" ? "white" : "black"} fontSize={12}>
-              - authenticatorData:  {AccountInfo.WebAuthnInfo.authenticatorData}
-              </Box>
-            <Box color={colorMode === "dark" ? "white" : "black"} fontSize={12}>
-              - clientData:  {AccountInfo.WebAuthnInfo.clientData}
-              </Box>
-            <Box color={colorMode === "dark" ? "white" : "black"} fontSize={12}>
-              - signature: {AccountInfo.WebAuthnInfo.signature}
-            </Box>
-            credentialId */}
            </VStack>
           )}
-          
           
           <Box
             borderRadius="3xl"
@@ -183,9 +177,177 @@ export default function Account({AccountInfo} : Props) {
           }}
           />
          </VStack>
-
         </Box>
+
+        <Box
+            borderRadius="3xl"
+            border="0.06rem"
+            borderStyle="solid"
+            borderColor="gray.300"
+            mt={3}
+            px={5}
+            pt={4}
+            pb={2}
+            mb={5}
+          >
+           <VStack alignItems={"center"}  align='stretch' spacing={3} mb={3} >
+        <Button
+                size="small"
+                fontSize="0.8rem"
+                fontWeight="normal"
+                color="rgb(30, 114, 32)"
+                px={58}
+                py={4}
+                h="1.62rem"
+                _hover={{
+                  background: "none",
+                  borderColor: "rgb(56, 165, 58)",
+                  textDecoration: "underline",
+                }}
+                onClick={async function()  {
+                  recepient && transferAmount  ? await _transferETH(
+                    AccountInfo.AccAddress,
+                    recepient,
+                    transferAmount,
+                    AccountInfo.WebAuthnInfo
+                  ) : console.log("number not set") ;
+
+                  const rawQuote = await provider.getBalance(AccAddress);
+                  console.log("rawQuote: ", rawQuote)
+                  let balance = Number(rawQuote) / 10 ** 18;
+                  setEtherBalance(balance);
+                }} >
+                 Send ETH
+          </Button>
+          <HStack spacing={1} >
+          <Text pl={20} pr={5}>Amount: </Text>
+          <Input
+          placeholder="0.0"
+          fontSize="md"
+          width="40%"
+          size="30rem"
+          textAlign="center"
+          focusBorderColor="blue"
+          type= "number"
+          color={colorMode === "dark" ? "white" : "black"}
+          onChange={async function (e) {
+            if (
+              e.target.value !== undefined 
+              && isConnected
+            ) {
+               setTransferAmount(Number(e.target.value));
+            } else {
+            }
+          }}
+          />
+          </HStack>
+          <HStack spacing={1} >
+          <Text pl={20} pr={5}>Recepient: </Text>
+          <Input
+          placeholder="0x..."
+          fontSize="md"
+          width="40%"
+          size="80rem"
+          textAlign="center"
+          focusBorderColor="blue"
+          type= "string"
+          color={colorMode === "dark" ? "white" : "black"}
+          onChange={async function (e) {
+            if (
+              e.target.value !== undefined 
+              && e.target.value !== ''
+              && isConnected
+            ) {
+              console.log("type: ", typeof(e.target.value))
+              setRecepient(e.target.value);
+               const rawQuote = await provider.getBalance(e.target.value);
+               console.log("rawQuote2: ", rawQuote)
+               let balance = Number(rawQuote) / 10 ** 18;
+               setEtherBalance2(balance);
+            } else if (e.target.value === '') {
+              setEtherBalance2(0)
+            } else {
+              console.log("smth wrong")
+            }
+          }}
+          />
+          </HStack>
+          <Box color={colorMode === "dark" ? "white" : "black"}>
+             Recepient ETH Balance: {etherBalance2 ? etherBalance2 : 0}  ETH
+              </Box>
+         </VStack>
+        </Box>
+        <Box
+            borderRadius="3xl"
+            border="0.06rem"
+            borderStyle="solid"
+            borderColor="gray.300"
+            mt={3}
+            px={5}
+            pt={4}
+            pb={2}
+            mb={5}
+            pl={110}
+          >
+         <Button
+                size="small"
+                fontSize="0.8rem"
+                fontWeight="normal"
+                color="rgb(30, 114, 32)"
+                px={10}
+                py={4}
+                h="1.62rem"
+                _hover={{
+                  background: "none",
+                  borderColor: "rgb(56, 165, 58)",
+                  textDecoration: "underline",
+                }}
+                onClick={async function()  {
+                  await _enabledLocation(
+                    AccountInfo.AccAddress,
+                    AccountInfo.WebAuthnInfo
+                  )
+                }} >
+                 Enable Location Validation
+          </Button>
+            </Box>
+
+            <Box
+            borderRadius="3xl"
+            border="0.06rem"
+            borderStyle="solid"
+            borderColor="gray.300"
+            mt={3}
+            px={5}
+            pt={4}
+            pb={2}
+            mb={5}
+            pl={110}
+          >
+         <Button
+                size="small"
+                fontSize="0.8rem"
+                fontWeight="normal"
+                color="rgb(30, 114, 32)"
+                px={10}
+                py={4}
+                h="1.62rem"
+                _hover={{
+                  background: "none",
+                  borderColor: "rgb(56, 165, 58)",
+                  textDecoration: "underline",
+                }}
+                onClick={async function()  {
+                  await _enabledLocation(
+                    AccountInfo.AccAddress,
+                    AccountInfo.WebAuthnInfo
+                  )
+                }} >
+                 Update Coordinates
+          </Button>
+            </Box>
       </Box>
+
     </Box>
   ) : <Text align={"center"} fontSize={25} pt={100}>
     Sign Ethereum transactions with your fingerprint.  No private key needed.

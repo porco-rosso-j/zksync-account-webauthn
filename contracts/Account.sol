@@ -10,12 +10,14 @@ import "@matterlabs/zksync-contracts/l2/system-contracts/openzeppelin/utils/Addr
 import "@openzeppelin/contracts/interfaces/IERC1271.sol";
 
 import "./webauthn/WebAuthn.sol";
+import "./position/Position.sol";
 
-contract Account is IAccount, IERC1271, WebAuthn {
+contract Account is IAccount, IERC1271, WebAuthn, Position {
     using TransactionHelper for Transaction;
 
+    bytes32 public maxValue =
+        0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
     uint[2] public coordinates;
-    string public lastChallenge;
     bytes4 constant EIP1271_SUCCESS_RETURN_VALUE = 0x1626ba7e;
 
     /**
@@ -121,7 +123,6 @@ contract Account is IAccount, IERC1271, WebAuthn {
             EIP1271_SUCCESS_RETURN_VALUE
         ) {
             magic = ACCOUNT_VALIDATION_SUCCESS_MAGIC;
-            lastChallenge = getChallenge(_transaction.signature);
         } else {
             magic = bytes4(0);
         }
@@ -146,12 +147,6 @@ contract Account is IAccount, IERC1271, WebAuthn {
             uint[2] memory rs
         ) = decodeSignature(_signature);
 
-        require(
-            keccak256(abi.encodePacked((clientChallenge))) !=
-                keccak256(abi.encodePacked((lastChallenge))),
-            "INVALID_CHALLENGE"
-        );
-
         bool verificationResult = validate(
             authenticatorData,
             authenticatorDataFlagMask,
@@ -165,49 +160,6 @@ contract Account is IAccount, IERC1271, WebAuthn {
         if (!verificationResult) {
             magic = bytes4(0);
         }
-    }
-
-    function decodeSignature(
-        bytes memory _signature
-    )
-        public
-        pure
-        returns (
-            bytes memory,
-            bytes1,
-            bytes memory,
-            string memory,
-            uint,
-            uint[2] memory
-        )
-    {
-        (
-            bytes memory authenticatorData,
-            bytes1 authenticatorDataFlagMask,
-            bytes memory clientData,
-            string memory clientChallenge,
-            uint clientChallengeDataOffset,
-            uint[2] memory rs
-        ) = abi.decode(
-                _signature,
-                (bytes, bytes1, bytes, string, uint, uint[2])
-            );
-
-        return (
-            authenticatorData,
-            authenticatorDataFlagMask,
-            clientData,
-            clientChallenge,
-            clientChallengeDataOffset,
-            rs
-        );
-    }
-
-    function getChallenge(
-        bytes memory _signature
-    ) public pure returns (string memory) {
-        (, , , string memory clientChallenge, , ) = decodeSignature(_signature);
-        return clientChallenge;
     }
 
     // ---------------------------------- //
@@ -232,9 +184,36 @@ contract Account is IAccount, IERC1271, WebAuthn {
     /// @dev it executes multicall if isBatched returns true and delegatecalls if _transaction.to is a module
     function _executeTransaction(Transaction calldata _transaction) internal {
         address to = address(uint160(_transaction.to));
-        bytes memory data = _transaction.data;
+        uint value = _transaction.value;
 
-        Address.functionCall(to, data);
+        bytes memory data = isPositionEnabled
+            ? checkPosition(_transaction.data)
+            : _transaction.data;
+
+        if (value != 0 && data.length == 0) {
+            // ETH transfer
+            Address.sendValue(payable(to), value);
+        } else if (this._hasMaxPrefix(data)) {
+            // "this" used to convert bytes memory to bytes calldata
+            // update coordinates
+            _transferOwnership(data);
+        } else {
+            // general transactions
+            Address.functionCall(to, data);
+        }
+    }
+
+    function _hasMaxPrefix(bytes calldata _data) public view returns (bool) {
+        return bytes32(_data[:32]) == maxValue;
+    }
+
+    function _transferOwnership(bytes memory _data) internal {
+        (, uint[2] memory newCoordinates) = abi.decode(
+            _data,
+            (bytes32, uint[2])
+        );
+
+        coordinates = newCoordinates;
     }
 
     /// @notice Method that should be used to initiate a transaction from this account
