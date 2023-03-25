@@ -15,9 +15,9 @@ const RICH_WALLET = {
 
 
    
-describe('MerkleRecoveryAA', () => {
+describe('TransferableAA', () => {
     let factory;
-    let aaFactoryArtifact;
+    let transferableAAFactoryArtifact;
     let wallet; 
 
     beforeEach(async () => {
@@ -25,20 +25,20 @@ describe('MerkleRecoveryAA', () => {
         wallet = new Wallet(RICH_WALLET.privateKey, provider);
         const deployer = new Deployer(hre, wallet);
         // Factory
-        aaFactoryArtifact = await deployer.loadArtifact('AAFactory');
-        const aaArtifact = await deployer.loadArtifact('MerkleRecoveryAA');
-        const aaBytecodehash = utils.hashBytecode(aaArtifact.bytecode);
+        transferableAAFactoryArtifact = await deployer.loadArtifact('TransferableAAFactory');
+        const transferableAAArtifact = await deployer.loadArtifact('TransferableAA');
+        const transferableAABytecodehash = utils.hashBytecode(transferableAAArtifact.bytecode);
         factory = await deployer.deploy(
-            aaFactoryArtifact,
-            [aaBytecodehash],
+            transferableAAFactoryArtifact,
+            [transferableAABytecodehash],
             undefined,
-            [aaArtifact.bytecode]
+            [transferableAAArtifact.bytecode]
             );
 
         // AA
-        const aaFactory = new ethers.Contract(
+        const transferableAAFactory = new ethers.Contract(
             factory.address,
-            aaFactoryArtifact.abi,
+            transferableAAFactoryArtifact.abi,
             wallet
         );
 
@@ -66,7 +66,7 @@ describe('MerkleRecoveryAA', () => {
         ethers.BigNumber.from(ethers.utils.hexlify(bufferFromBase64(y)))
         ]
 
-        const tx = await aaFactory.deployAccount(
+        const tx = await transferableAAFactory.deployAccount(
             salt,
             pubkeyUintArray
           );
@@ -75,14 +75,14 @@ describe('MerkleRecoveryAA', () => {
           const abiCoder = new ethers.utils.AbiCoder();
           const accountAddress = utils.create2Address(
             factory.address,
-            await aaFactory.merkleRecoveryBytecodeHash(),
+            await transferableAAFactory.transferableAABytecodeHash(),
             salt,
             abiCoder.encode(['bytes32', 'uint256[2]'], [salt, pubkeyUintArray])
           );
-          console.log(`Account deployed on address ${accountAddress}`);
+          console.log(`TransferableAA deployed on address ${accountAddress}`);
     });
 
-    it('should deploy AA account', async () => {
+    it('should deploy TransferalbeAA account', async () => {
 
 
 

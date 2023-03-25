@@ -28,8 +28,6 @@
     "ethereum-waffle": "^3.4.4",
     "ethers": "^5.7.2",
     "hardhat": "^2.12.5",
-    "keccak256": "^1.0.6",
-    "merkletreejs": "^0.3.9",
     "mocha": "^10.2.0",
     "ts-node": "^10.9.1",
     "typechain": "^8.1.1",

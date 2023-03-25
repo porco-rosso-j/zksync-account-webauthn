@@ -12,27 +12,27 @@ const RICH_WALLET = {
 
 
    
-describe('AAFactory', () => {
-    let aaFactory;
+describe('TransferableAAFactory', () => {
+    let transferableAAFactory;
 
     beforeEach(async () => {
     const provider = Provider.getDefaultProvider();
     const wallet = new Wallet(RICH_WALLET.privateKey, provider);
     const deployer = new Deployer(hre, wallet);
 
-    const aaFactoryArtifact = await deployer.loadArtifact('AAFactory');
-    const aaArtifact = await deployer.loadArtifact('MerkleRecoveryAA');
-    const aaBytecodehash = utils.hashBytecode(aaArtifact.bytecode);
-    aaFactory = await deployer.deploy(
-        aaFactoryArtifact,
-        [aaBytecodehash],
+    const transferableAAFactoryArtifact = await deployer.loadArtifact('TransferableAAFactory');
+    const transferableAAArtifact = await deployer.loadArtifact('TransferableAA');
+    const transferableAAbytecodehash = utils.hashBytecode(transferableAAArtifact.bytecode);
+    transferableAAFactory = await deployer.deploy(
+        transferableAAFactoryArtifact,
+        [transferableAAbytecodehash],
         undefined,
-        [aaArtifact.bytecode]
+        [transferableAAArtifact.bytecode]
         );
     });
 
     it('should deploy', async () => {
-        console.log(`aa address: ${aaFactory.address}`);
+        console.log(`aa address: ${transferableAAFactory.address}`);
     });
 
 });

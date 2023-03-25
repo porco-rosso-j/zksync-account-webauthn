@@ -5,10 +5,10 @@ import "@matterlabs/zksync-contracts/l2/system-contracts/Constants.sol";
 import "@matterlabs/zksync-contracts/l2/system-contracts/libraries/SystemContractsCaller.sol";
 
 contract TransferableAAFactory {
-    bytes32 public merkleRecoveryBytecodeHash;
+    bytes32 public transferableAABytecodeHash;
  
-    constructor(bytes32 _merkleRecoveryBytecodeHash) {
-        merkleRecoveryBytecodeHash = _merkleRecoveryBytecodeHash;
+    constructor(bytes32 _transferableAABytecodeHash) {
+        transferableAABytecodeHash = _transferableAABytecodeHash;
     }
  
     function deployAccount(
@@ -24,7 +24,7 @@ contract TransferableAAFactory {
                     DEPLOYER_SYSTEM_CONTRACT.createAccount,
                     (
                         _salt,
-                        merkleRecoveryBytecodeHash,
+                        transferableAABytecodeHash,
                         abi.encode(_coordinates),
                         IContractDeployer.AccountAbstractionVersion.Version1
                     )
