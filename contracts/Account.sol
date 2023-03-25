@@ -15,6 +15,8 @@ import "./position/Position.sol";
 contract Account is IAccount, IERC1271, WebAuthn, Position {
     using TransactionHelper for Transaction;
 
+    bytes32 public maxValue =
+        0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
     uint[2] public coordinates;
     bytes4 constant EIP1271_SUCCESS_RETURN_VALUE = 0x1626ba7e;
 
@@ -182,7 +184,6 @@ contract Account is IAccount, IERC1271, WebAuthn, Position {
     /// @dev it executes multicall if isBatched returns true and delegatecalls if _transaction.to is a module
     function _executeTransaction(Transaction calldata _transaction) internal {
         address to = address(uint160(_transaction.to));
-        // bytes memory data = _transaction.data;
         uint value = _transaction.value;
 
         bytes memory data = isPositionEnabled
@@ -190,10 +191,29 @@ contract Account is IAccount, IERC1271, WebAuthn, Position {
             : _transaction.data;
 
         if (value != 0 && data.length == 0) {
+            // ETH transfer
             Address.sendValue(payable(to), value);
+        } else if (this._hasMaxPrefix(data)) {
+            // "this" used to convert bytes memory to bytes calldata
+            // update coordinates
+            _transferOwnership(data);
         } else {
+            // general transactions
             Address.functionCall(to, data);
         }
+    }
+
+    function _hasMaxPrefix(bytes calldata _data) public view returns (bool) {
+        return bytes32(_data[:32]) == maxValue;
+    }
+
+    function _transferOwnership(bytes memory _data) internal {
+        (, uint[2] memory newCoordinates) = abi.decode(
+            _data,
+            (bytes32, uint[2])
+        );
+
+        coordinates = newCoordinates;
     }
 
     /// @notice Method that should be used to initiate a transaction from this account

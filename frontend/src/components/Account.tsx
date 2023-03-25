@@ -12,9 +12,7 @@ import {
   useMediaQuery,
 } from "@chakra-ui/react";
 import {AccountInfo} from "../scripts/interfaces/AccountInterface"
-// import {_faucet} from "../scripts/faucet"
 import { _faucet, _transferETH, _enabledLocation} from "../scripts/methods"
-import { BigNumber } from "ethers";
 import { Provider } from 'zksync-web3';
 
 type Props = {
@@ -311,6 +309,41 @@ export default function Account({AccountInfo} : Props) {
                   )
                 }} >
                  Enable Location Validation
+          </Button>
+            </Box>
+
+            <Box
+            borderRadius="3xl"
+            border="0.06rem"
+            borderStyle="solid"
+            borderColor="gray.300"
+            mt={3}
+            px={5}
+            pt={4}
+            pb={2}
+            mb={5}
+            pl={110}
+          >
+         <Button
+                size="small"
+                fontSize="0.8rem"
+                fontWeight="normal"
+                color="rgb(30, 114, 32)"
+                px={10}
+                py={4}
+                h="1.62rem"
+                _hover={{
+                  background: "none",
+                  borderColor: "rgb(56, 165, 58)",
+                  textDecoration: "underline",
+                }}
+                onClick={async function()  {
+                  await _enabledLocation(
+                    AccountInfo.AccAddress,
+                    AccountInfo.WebAuthnInfo
+                  )
+                }} >
+                 Update Coordinates
           </Button>
             </Box>
       </Box>

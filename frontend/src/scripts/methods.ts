@@ -5,11 +5,12 @@ import {default as paymasterArtifact} from "./artifacts/Paymaster.json"
 import {default as accountArtifact} from "./artifacts/Account.json"
 import {address} from "./utils/address"
 import {WebAuthn} from "./interfaces/AccountInterface"
-import { authenticate } from "./helpers/webuathn"
+import { authenticate, register } from "./helpers/webuathn"
 import { getEIP712TxRequest, getCustomData } from "./helpers/zksync"
 import { getLocationHash, getTxWithPosition } from "./helpers/position"
 
 const provider = new Provider("http://localhost:3050", 270);
+const maxHex = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 
 
 export async function _faucet(
@@ -52,6 +53,21 @@ export async function _enabledLocation(_account:string, _webAuthnData: WebAuthn)
   let tx: types.TransactionRequest = await getEIP712TxRequest(_account, _account, popTx.data as ethers.BytesLike, customData)
 
   await _sendTx(_account, tx)
+}
+
+
+export async function _transferOwnership(_account:string, _webAuthnData: WebAuthn):Promise<WebAuthn> {
+  const customData: types.Eip712Meta = await _getCustomData(_webAuthnData.credentialId)
+
+  const [webAuthnData, coordinates] = await register(_webAuthnData.credentialId)
+  const abiCoder = new ethers.utils.AbiCoder();
+  const txData = abiCoder.encode(["bytes32", "uint[]"], [maxHex, coordinates])
+
+  let tx: types.TransactionRequest = await getEIP712TxRequest(_account, _account, txData, customData)
+
+  await _sendTx(_account, tx)
+
+  return webAuthnData
 }
 
 async function _getCustomData(_credentialId: string):Promise<types.Eip712Meta> {
