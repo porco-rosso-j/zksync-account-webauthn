@@ -37,6 +37,7 @@ export default function Account({AccountInfo,setAccountInfo} : Props) {
   const [etherBalance, setEtherBalance] = useState<number>(0)
   const [etherBalance2, setEtherBalance2] = useState<number>(0)
   const [isScreenFullWidth] = useMediaQuery("(min-width: 475px)");
+  const [isScreenSmallWidth] = useMediaQuery("(min-width: 380px)");
 
   const [faucetAmount, setFaucetAmt] = useState<number>(0)
   const [transferAmount, setTransferAmount] = useState<number>(0)
@@ -288,10 +289,15 @@ export default function Account({AccountInfo,setAccountInfo} : Props) {
       </Box>
     </Box>
   ) :
-  ( <Box mt={"150px"}>
+  ( <VStack>
       <Center >
-          <Text fontSize={25} pt={100}>
-            Sign Ethereum transactions with your fingerprint.  No private key needed.
+          <Text align={"center"} fontSize={25} >
+          Experience the potential of Next Generation Wallets
+          </Text>
+      </Center>
+      <Center>
+          <Text align={"center"} fontSize={25}>
+            Sign Ethereum transactions with your fingerprint and eliminate the need for a private key.
           </Text>
       </Center>
       <Center>
@@ -307,7 +313,7 @@ export default function Account({AccountInfo,setAccountInfo} : Props) {
             setAccountInfo={setAccountInfo}
             />
       </Center>
-    </Box>
+    </VStack>
 
     )
    ;

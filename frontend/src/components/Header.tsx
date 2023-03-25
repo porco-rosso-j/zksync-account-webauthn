@@ -16,9 +16,6 @@ import {IoBulb,IoBulbOutline} from "react-icons/io5";
 export default function Layout() {
   const { colorMode, toggleColorMode } = useColorMode();
   const [isDarkMode, setIsDarkMode] = useState(colorMode === "dark");
-  const [isScreenFullWidth] = useMediaQuery("(min-width: 435px)");
-  const [isScreenMediumWidth] = useMediaQuery("(min-width: 400px)");
-  const [isScreenSmallWidth] = useMediaQuery("(min-width: 380px)");
 
 
 

@@ -12,7 +12,6 @@ type Props = {
 
 export default function ConnectButton({ handleOpenModal, fontSize, AccountInfo }: Props) {
   const AccAddress = AccountInfo.AccAddress
- //const etherBalance = useEtherBalance( AccountInfo.isConnected ? AccAddress : null);
   const {colorMode } = useColorMode();
 
   return AccountInfo.isConnected ? (
@@ -50,17 +49,17 @@ export default function ConnectButton({ handleOpenModal, fontSize, AccountInfo }
   ) : (
     <Button
       onClick={handleOpenModal}
-      bg="rgb(253, 234, 241)"
-      color="rgb(213, 0, 102)"
+      bg="#C5CBE3"
+      color="#4056A1"
       fontSize={fontSize}
       fontWeight="semibold"
       borderRadius="xl"
-      border="0.06rem solid rgb(253, 234, 241)"
+      border="0.06rem solid #C5CBE3"
       _hover={{
-        borderColor: "rgb(213, 0, 102)",
+        borderColor: "#4056A1",
       }}
       _active={{
-        borderColor: "rgb(213, 0, 102)",
+        borderColor: "#4056A1",
       }}
     >
       Connect to a wallet
