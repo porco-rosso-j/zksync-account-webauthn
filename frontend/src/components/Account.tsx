@@ -18,13 +18,14 @@ import {
 import { Provider } from 'zksync-web3';
 import ConnectButton from "./ConnectButton";
 import {getFontSize} from "../scripts/utils/lib";
+import AccountModal from "./Modal/AccountModal";
 
 type Props = {
   AccountInfo: AccountInfo
   setAccountInfo: any
 };
 
-export default function Account({AccountInfo} : Props) {
+export default function Account({AccountInfo,setAccountInfo} : Props) {
   const AccAddress = AccountInfo.AccAddress
   const isConnected = AccountInfo.isConnected
 
@@ -195,10 +196,16 @@ export default function Account({AccountInfo} : Props) {
       </Center>
       <Center>
           <ConnectButton
-                        handleOpenModal={onOpen}
-                        fontSize={getFontSize(isScreenFullWidth)}
-                        AccountInfo={AccountInfo}
-              />
+            handleOpenModal={onOpen}
+            fontSize={getFontSize(isScreenFullWidth)}
+            AccountInfo={AccountInfo}
+            />
+          <AccountModal
+            isOpen={isOpen}
+            onClose={onClose}
+            AccountInfo={AccountInfo}
+            setAccountInfo={setAccountInfo}
+            />
       </Center>
     </Box>
 

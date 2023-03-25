@@ -9,19 +9,11 @@ import {
   useMediaQuery
 } from "@chakra-ui/react";
 
-import AccountModal from "./Modal/AccountModal";
-import {AccountInfo} from "../scripts/interfaces/AccountInterface" ;
 import {IoBulb,IoBulbOutline} from "react-icons/io5";
 
-type Props = {
-  children?: ReactNode;
-  AccountInfo: AccountInfo;
-  setAccountInfo: any;
-};
 
 // 
-export default function Layout({ children, AccountInfo, setAccountInfo }: Props) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+export default function Layout() {
   const { colorMode, toggleColorMode } = useColorMode();
   const [isDarkMode, setIsDarkMode] = useState(colorMode === "dark");
   const [isScreenFullWidth] = useMediaQuery("(min-width: 435px)");
@@ -45,13 +37,6 @@ export default function Layout({ children, AccountInfo, setAccountInfo }: Props)
           >
           </IoBulb>
         </VStack>
-
-        <AccountModal 
-        isOpen={isOpen}
-        onClose={onClose}
-        AccountInfo={AccountInfo}
-        setAccountInfo={setAccountInfo}
-        />
       </Flex>
     </Menu>
   );

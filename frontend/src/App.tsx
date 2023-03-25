@@ -9,16 +9,12 @@ import {AccountInfo, AccountInfoNull} from "./scripts/interfaces/AccountInterfac
 
 function App() {
 
-  const  { isOpen, onClose } = useDisclosure();
   const [AccountInfo, setAccountInfo] = useState<AccountInfo>(AccountInfoNull);
 
   return (
     <ChakraProvider theme={theme}>
      
-      <Header 
-      AccountInfo={AccountInfo}
-      setAccountInfo={setAccountInfo}
-      /> 
+      <Header/>
 
       <Account
       AccountInfo={AccountInfo}
