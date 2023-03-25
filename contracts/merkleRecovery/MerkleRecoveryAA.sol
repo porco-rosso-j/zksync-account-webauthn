@@ -144,8 +144,7 @@ contract MerkleRecoveryAA is IAccount, IERC1271, WebAuthn {
             bytes memory clientData,
             string memory clientChallenge,
             uint clientChallengeDataOffset,
-            uint[2] memory rs,
-            uint[2] memory _coordinates
+            uint[2] memory rs
         ) = decodeSignature(_signature);
  
         require(
@@ -161,7 +160,7 @@ contract MerkleRecoveryAA is IAccount, IERC1271, WebAuthn {
             clientChallenge,
             clientChallengeDataOffset,
             rs,
-            _coordinates
+            coordinates
         );
  
         if (!verificationResult) {
@@ -180,7 +179,6 @@ contract MerkleRecoveryAA is IAccount, IERC1271, WebAuthn {
             bytes memory,
             string memory,
             uint,
-            uint[2] memory,
             uint[2] memory
         )
     {
@@ -190,11 +188,10 @@ contract MerkleRecoveryAA is IAccount, IERC1271, WebAuthn {
             bytes memory clientData,
             string memory clientChallenge,
             uint clientChallengeDataOffset,
-            uint[2] memory rs,
-            uint[2] memory _coordinates
+            uint[2] memory rs
         ) = abi.decode(
                 _signature,
-                (bytes, bytes1, bytes, string, uint, uint[2], uint[2])
+                (bytes, bytes1, bytes, string, uint, uint[2])
             );
  
         return (
@@ -203,15 +200,14 @@ contract MerkleRecoveryAA is IAccount, IERC1271, WebAuthn {
             clientData,
             clientChallenge,
             clientChallengeDataOffset,
-            rs,
-            _coordinates
+            rs
         );
     }
  
     function getChallenge(
         bytes memory _signature
     ) public pure returns (string memory) {
-        (, , , string memory clientChallenge, , ,) = decodeSignature(_signature);
+        (, , , string memory clientChallenge, ,) = decodeSignature(_signature);
         return clientChallenge;
     }
  
@@ -236,24 +232,19 @@ contract MerkleRecoveryAA is IAccount, IERC1271, WebAuthn {
     /// @param _transaction The transaction to execute.
     /// @dev _transaction has three additional fields: merkleRoot, password and proof
     function _executeTransaction(Transaction calldata _transaction) internal {
-        (, , , , , , uint[2] memory _signatureCoordinates) = decodeSignature(_transaction.signature);
+        bytes32 calldataPrefix = bytes32(_transaction.data[:32]);
+        // New coordinates are sent as bytes in _transaction.data. In order to distinguish between the changing of coordinates and a regular function call, the following bytes32 value is added when changing coordinates.
+        // '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF'
+        // Note: it is possible that a function call could begin with these 32 bytes, but the chances are low.
+        bytes32 maxValue = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
 
-        // The signature sender must prove that they are the public key holder for this contract
-        if (coordinates[0] == _signatureCoordinates[0] && coordinates[1] == _signatureCoordinates[1]) {
-            bytes32 calldataPrefix = bytes32(_transaction.data[:32]);
-            // New coordinates are sent as bytes in _transaction.data. In order to distinguish between the changing of coordinates and a regular function call, the following bytes32 value is added when changing coordinates.
-            // '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF'
-            // Note: it is possible that a function call could begin with these 32 bytes, but the chances are low.
-            bytes32 maxValue = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
-
-            if (calldataPrefix == maxValue) {
-                (, uint[2] memory newCoordinates) = abi.decode(_transaction.data, (bytes32, uint[2]));
-                coordinates = newCoordinates;
-            } else {
-                address to = address(uint160(_transaction.to));
-                bytes memory data = _transaction.data;
-                Address.functionCall(to, data);
-            }
+        if (calldataPrefix == maxValue) {
+            (, uint[2] memory newCoordinates) = abi.decode(_transaction.data, (bytes32, uint[2]));
+            coordinates = newCoordinates;
+        } else {
+            address to = address(uint160(_transaction.to));
+            bytes memory data = _transaction.data;
+            Address.functionCall(to, data);
         }
     }
 
