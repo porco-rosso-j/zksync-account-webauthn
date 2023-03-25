@@ -4,12 +4,12 @@ import {
   Menu,
   useColorMode,
   VStack,
-  useDisclosure,
   Spacer,
-  useMediaQuery
+  Image,Text
 } from "@chakra-ui/react";
+import logo from '../assets/logo.svg';
 
-import {IoBulb,IoBulbOutline} from "react-icons/io5";
+import {IoBulb} from "react-icons/io5";
 
 
 // 
@@ -25,6 +25,10 @@ export default function Layout() {
     
     <Menu>
       <Flex alignItems="center" mx="1.5rem" mt="1.5rem">
+      <Image src={logo} alt={'logo'} w={"70px"} h={"70px"} />
+      <Text>
+      Bye Bye Private Key
+      </Text>
         <Spacer />
         <VStack spacing={2}>
           <IoBulb
