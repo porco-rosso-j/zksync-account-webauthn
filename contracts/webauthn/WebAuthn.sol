@@ -3,6 +3,13 @@ pragma solidity >=0.8.0;
 
 import {EllipticCurve} from "./EllipticCurve.sol";
 
+/**
+The original Webauthn can be found here: 
+https://github.com/alembic-tech/P256-verify-signature/blob/main/contracts/Webauthn.sol
+
+The original version requires a contract to be deployed for each public key.  This has been changed so that an array of the public key coordinates is used instead. This simplifies the design and reduces gas consumption.
+ */
+
 error InvalidAuthenticatorData();
 error InvalidClientData();
 error InvalidSignature();

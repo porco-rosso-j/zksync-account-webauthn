@@ -228,6 +228,7 @@ contract TransferableAA is IAccount, IERC1271, WebAuthn {
  
     /// @notice Inner method for executing a transaction.
     /// @param _transaction The transaction to execute.
+    /// @dev The calldata execution either sets a new public key for this contact, thereby changing control of it, or it gets executed as an external function call.
     /// @dev it executes multicall if isBatched returns true and delegatecalls if _transaction.to is a module
     function _executeTransaction(Transaction calldata _transaction) internal {
         bytes32 calldataPrefix = bytes32(_transaction.data[:32]);

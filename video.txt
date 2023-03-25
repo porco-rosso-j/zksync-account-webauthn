@@ -1,0 +1,4 @@
+The biggest issue keeping billions of people from using Ethereum is that they have a private key allergy.  Runny nose, itchy skin, red eyes--it's terrible.  Our team, Bye Bye Private Key, has the remedy. We use zkSync's account abstraction protocol to enable users to sign transactions with Webauthn.  Webauthn uses asymmetric cryptography to do things like creating a signature with a fingerprint or passcode on a smartphone.  By integrating the logic of Webauthn signatures into zkSync's account abstraction, transactions are cryptographically secured but without the need to keep and protect a private key.
+Let's jump into what we built.
+
+
