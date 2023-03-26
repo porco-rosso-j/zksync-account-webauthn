@@ -1,0 +1,71 @@
+Arguments: 
+  /Users/jack-sw/.nvm/versions/node/v16.19.1/bin/node /opt/homebrew/bin/yarn add -D @zksync-web3@^0.14.3
+
+PATH: 
+  /Users/jack-sw/.nvm/versions/node/v16.19.1/bin:/Users/jack-sw/.nvm/versions/node/v16.19.1/bin:/opt/homebrew/bin:/opt/homebrew/opt/icu4c/sbin:/opt/homebrew/opt/icu4c/bin:/opt/homebrew/opt/icu4c/sbin:/opt/homebrew/opt/icu4c/bin:/Library/Frameworks/Python.framework/Versions/3.9/bin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/Library/Apple/usr/bin:/Users/jack-sw/.nvm/versions/node/v16.19.1/bin:/opt/homebrew/Caskroom/miniforge/base/condabin:/Users/jack-sw/.sdkman/candidates/java/current/bin:/opt/homebrew/bin:/opt/homebrew/opt/icu4c/sbin:/opt/homebrew/opt/icu4c/bin:/Library/Frameworks/Python.framework/Versions/3.9/bin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/opt/homebrew/sbin:/Users/jack-sw/.cargo/bin:/Users/jack-sw/.foundry/bin:/Users/jack-sw/.foundry/bin
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  16.19.1
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/@zksync-web3: Request "https://registry.yarnpkg.com/@zksync-web3" returned a 405
+      at Request.params.callback [as _callback] (/opt/homebrew/lib/node_modules/yarn/lib/cli.js:66154:18)
+      at Request.self.callback (/opt/homebrew/lib/node_modules/yarn/lib/cli.js:140890:22)
+      at Request.emit (node:events:513:28)
+      at Request.<anonymous> (/opt/homebrew/lib/node_modules/yarn/lib/cli.js:141862:10)
+      at Request.emit (node:events:513:28)
+      at IncomingMessage.<anonymous> (/opt/homebrew/lib/node_modules/yarn/lib/cli.js:141784:12)
+      at Object.onceWrapper (node:events:627:28)
+      at IncomingMessage.emit (node:events:525:35)
+      at endReadableNT (node:internal/streams/readable:1358:12)
+      at processTicksAndRejections (node:internal/process/task_queues:83:21)
+
+npm manifest: 
+  {
+    "name": "zksync-account-webauthn",
+    "license": "UNLICENSED",
+    "scripts": {},
+    "devDependencies": {
+      "@matterlabs/hardhat-zksync-chai-matchers": "^0.1.2",
+      "@matterlabs/hardhat-zksync-deploy": "0.6.3",
+      "@matterlabs/hardhat-zksync-solc": "0.3.14",
+      "@matterlabs/hardhat-zksync-toolbox": "^0.1.0",
+      "@matterlabs/hardhat-zksync-verify": "^0.1.4",
+      "@matterlabs/zksync-contracts": "0.6.1",
+      "@nomicfoundation/hardhat-chai-matchers": "^1.0.5",
+      "@nomiclabs/hardhat-ethers": "^2.0.6",
+      "@nomiclabs/hardhat-etherscan": "^3.1.7",
+      "@nomiclabs/hardhat-waffle": "^2.0.3",
+      "@openzeppelin/contracts": "^4.6.0",
+      "@openzeppelin/contracts-upgradeable": "^4.6.0",
+      "@typechain/ethers-v5": "^10.2.0",
+      "@typechain/hardhat": "^6.1.5",
+      "@types/chai": "^4.3.4",
+      "@types/mocha": "^10.0.1",
+      "@types/node": "^18.11.9",
+      "buffer": "^6.0.3",
+      "chai": "^4.3.7",
+      "dotenv": "^16.0.3",
+      "ethereum-waffle": "^3.4.4",
+      "ethers": "^5.7.2",
+      "hardhat": "^2.12.5",
+      "mocha": "^10.2.0",
+      "ts-node": "^10.9.1",
+      "typechain": "^8.1.1",
+      "typescript": "^4.9.4",
+      "webauthn": "^0.2.0",
+      "zksync-web3": "^0.13.4"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

@@ -3,7 +3,7 @@ import {address} from "../utils/address"
 import {Provider, utils, types} from 'zksync-web3';
 
 // gas limit is 10M as signature verification using ECDSA with p256 curve costs at least 7-8M gas
-const gasLimit = ethers.utils.hexlify(12000000) 
+const gasLimit = ethers.utils.hexlify(15000000) 
 const provider = new Provider("http://localhost:3050", 270);
 
 export async function getEIP712TxRequest(_from:string, _to: string, _calldata: ethers.BytesLike, _customData:types.Eip712Meta):Promise<types.TransactionRequest> {
@@ -12,7 +12,7 @@ export async function getEIP712TxRequest(_from:string, _to: string, _calldata: e
         to: _to,
         chainId: (await provider.getNetwork()).chainId,
         nonce: await provider.getTransactionCount(_from),
-        type: 113,
+        type: utils.EIP712_TX_TYPE,
         data: _calldata,
         customData: _customData,
         value: ethers.BigNumber.from(0),
@@ -27,7 +27,6 @@ export const _paymasterParams = utils.getPaymasterParams(address.paymaster, {
     innerInput: new Uint8Array()
 }
 );
-
 
 export async function getCustomData(_signature:ethers.BytesLike):Promise<types.Eip712Meta> {
   

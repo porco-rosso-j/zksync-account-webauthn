@@ -11,9 +11,9 @@ const config: Config = {
   readOnlyUrls: {
     [ZkSyncLocal.chainId]: 'http://localhost:3050'
   },
-  connectors: {
-    metamask: new MetamaskConnector(),
-  },
+  // connectors: {
+  //   metamask: new MetamaskConnector(),
+  // },
   gasLimitBufferPercentage: 20 // The percentage by which the transaction may exceed the estimated gas limit
 }
 

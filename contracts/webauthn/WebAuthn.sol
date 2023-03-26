@@ -44,7 +44,6 @@ contract WebAuthn is EllipticCurve {
             revert InvalidClientData();
         }
 
-        // Verify the signature over sha256(authenticatorData || sha256(clientData))
         bytes memory verifyData = new bytes(authenticatorData.length + 32);
 
         copyBytes(
@@ -64,7 +63,6 @@ contract WebAuthn is EllipticCurve {
         );
 
         bytes32 message = sha256(verifyData);
-        //return EllipticCurve.validateSignature(message, rs, coordinates);
         return validateSignature(message, rs, coordinates);
     }
 
@@ -76,7 +74,7 @@ contract WebAuthn is EllipticCurve {
         uint clientChallengeDataOffset,
         uint[2] memory rs,
         uint[2] memory coordinates
-    ) internal pure returns (bool) {
+    ) public pure returns (bool) {
         if (
             !checkSignature(
                 authenticatorData,

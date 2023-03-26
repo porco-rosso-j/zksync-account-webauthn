@@ -12,7 +12,6 @@ import { getLocationHash, getTxWithPosition } from "./helpers/position"
 const provider = new Provider("http://localhost:3050", 270);
 const maxHex = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 
-
 export async function _faucet(
        _account:string, 
        _amount: number, 
@@ -23,7 +22,7 @@ export async function _faucet(
     const paymaster = new Contract(address.paymaster, paymasterArtifact.abi, provider)
     const popTx: types.TransactionRequest = await paymaster.populateTransaction.faucet(ethers.utils.parseEther(_amount.toString()))
     let tx: types.TransactionRequest = await getEIP712TxRequest(_account, address.paymaster, popTx.data as ethers.BytesLike, customData)
-
+    console.log("tx", tx)
     await _sendTx(_account, tx)
 }
 
@@ -78,6 +77,8 @@ async function _getCustomData(_credentialId: string):Promise<types.Eip712Meta> {
 
 async function _sendTx(_account: string, tx: types.TransactionRequest) {
   tx.data = await getTxWithPosition(_account, tx.data as ethers.BytesLike)
+
+  console.log("gas: ", await provider.estimateGas(tx))
   const response = await(await provider.sendTransaction(utils.serialize(tx))).wait()
   console.log("response: ", response)
 }

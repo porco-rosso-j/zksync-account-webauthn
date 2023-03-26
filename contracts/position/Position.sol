@@ -28,26 +28,6 @@ contract Position {
             bytes memory
         )
     {
-        // bytes32 position;
-        // bytes memory data;
-
-        // if (_hasMaxPrefix) {
-        //     (, bytes32 position_, bytes memory data_) = abi.decode(
-        //         _data,
-        //         (bytes32, bytes32, bytes)
-        //     );
-
-        //     position = position_;
-        //     data = data_;
-        // } else {
-        // (bytes32 position_, bytes memory data_) = abi.decode(
-        //     _data,
-        //     (bytes32, bytes)
-        // );
-        //     position = position_;
-        //     data = data_;
-        // }
-
         (bytes32 position, bytes memory data) = abi.decode(
             _data,
             (bytes32, bytes)

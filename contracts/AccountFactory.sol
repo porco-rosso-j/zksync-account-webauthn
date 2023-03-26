@@ -6,9 +6,11 @@ import "@matterlabs/zksync-contracts/l2/system-contracts/libraries/SystemContrac
 
 contract AccountFactory {
     bytes32 public accountBytecodeHash;
+    address public webauthn;
 
-    constructor(bytes32 _accountBytecodeHash) {
+    constructor(bytes32 _accountBytecodeHash, address _webauthn) {
         accountBytecodeHash = _accountBytecodeHash;
+        webauthn = _webauthn;
     }
 
     function deployAccount(
@@ -25,7 +27,7 @@ contract AccountFactory {
                     (
                         salt,
                         accountBytecodeHash,
-                        abi.encode(_q),
+                        abi.encode(_q, webauthn),
                         IContractDeployer.AccountAbstractionVersion.Version1
                     )
                 )

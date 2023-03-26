@@ -12,13 +12,15 @@ import "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import "./webauthn/WebAuthn.sol";
 import "./position/Position.sol";
 
-contract Account is IAccount, IERC1271, WebAuthn, Position {
+contract Account is IAccount, IERC1271, Position {
     using TransactionHelper for Transaction;
 
     bytes32 public maxValue =
         0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
     uint[2] public coordinates;
     bytes4 constant EIP1271_SUCCESS_RETURN_VALUE = 0x1626ba7e;
+
+    WebAuthn public webauthn;
 
     /**
      * @dev Simulate the behavior of the EOA if the caller is not the bootloader.
@@ -57,8 +59,13 @@ contract Account is IAccount, IERC1271, WebAuthn, Position {
     }
 
     /// @param _coordinates:fsdf
-    constructor(uint[2] memory _coordinates) {
+    constructor(
+        uint[2] memory _coordinates,
+        address _webauthn //, // address _position
+    ) {
         coordinates = _coordinates;
+        webauthn = WebAuthn(_webauthn);
+        // position = Position(_position);
     }
 
     // ---------------------------------- //
@@ -145,9 +152,9 @@ contract Account is IAccount, IERC1271, WebAuthn, Position {
             string memory clientChallenge,
             uint clientChallengeDataOffset,
             uint[2] memory rs
-        ) = decodeSignature(_signature);
+        ) = webauthn.decodeSignature(_signature);
 
-        bool verificationResult = validate(
+        bool verificationResult = webauthn.validate(
             authenticatorData,
             authenticatorDataFlagMask,
             clientData,
@@ -185,6 +192,7 @@ contract Account is IAccount, IERC1271, WebAuthn, Position {
     function _executeTransaction(Transaction calldata _transaction) internal {
         address to = address(uint160(_transaction.to));
         uint value = _transaction.value;
+        //bytes memory data = _transaction.data;
 
         bytes memory data = isPositionEnabled
             ? checkPosition(_transaction.data)
@@ -193,8 +201,9 @@ contract Account is IAccount, IERC1271, WebAuthn, Position {
         if (value != 0 && data.length == 0) {
             // ETH transfer
             Address.sendValue(payable(to), value);
+
+            //"this" used to convert bytes memory to bytes calldata
         } else if (this._hasMaxPrefix(data)) {
-            // "this" used to convert bytes memory to bytes calldata
             // update coordinates
             _transferOwnership(data);
         } else {
