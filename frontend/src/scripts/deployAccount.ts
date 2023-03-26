@@ -23,14 +23,10 @@ export async function _deployAccount():Promise<any> {
         console.warn(e)
     }
 
-    console.log(result);
-    console.log(result?.credential.publicKey);
-
     const cordinates = await getCordinates(result?.credential.publicKey);
     const salt = constants.HashZero;
     const tx = await (await factory.deployAccount(salt, [cordinates[0], cordinates[1]])).wait()
     const accAddress = (await utils.getDeployedContracts(tx))[0].deployedAddress
-    console.log("accAddress: ", accAddress)
 
     return [
         accAddress, 
@@ -52,11 +48,8 @@ async function getKey(pubkey:ArrayBufferLike) {
 
 async function getCordinates(pubkey:string | undefined):Promise<BigNumber[]> {
     const pubKeyBuffer = bufferFromBase64(pubkey as string);
-    console.log("pubKeyBuffer: ", pubKeyBuffer)
     const rawPubkey = await crypto.subtle.exportKey("jwk", await getKey(pubKeyBuffer))
     const { x, y } = rawPubkey;
-    console.log("x: ", x)
-    console.log("y: ", y)
     const pubkeyUintArray = [ 
     BigNumber.from(bufferToHex(bufferFromBase64(x as string))),
     BigNumber.from(bufferToHex(bufferFromBase64(y as string)))

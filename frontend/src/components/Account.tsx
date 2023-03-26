@@ -12,12 +12,7 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import {AccountInfo} from "../scripts/interfaces/AccountInterface"
-import {
-  useEthers,
-} from "@usedapp/core";
-// import {_faucet} from "../scripts/faucet"
-import {_faucet, _transferETH} from "../scripts/methods"
-import { BigNumber } from "ethers";
+import { _faucet, _transferETH, _enabledLocation} from "../scripts/methods"
 import { Provider } from 'zksync-web3';
 import ConnectButton from "./ConnectButton";
 import {getFontSize} from "../scripts/utils/lib";
@@ -320,8 +315,8 @@ export default function Account({AccountInfo,setAccountInfo} : Props) {
               Disconnect Wallet
             </Button>
         </Center>
-
       </Box>
+
     </Box>
   ) :
   ( <VStack>

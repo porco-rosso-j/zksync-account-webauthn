@@ -1,6 +1,29 @@
 import {Buffer} from 'buffer';
 import * as ethers from 'ethers';
 import * as webauthn from '../webauthn/index'
+import {WebAuthn} from "../interfaces/AccountInterface"
+
+export async function register(_credentialId:string):Promise<any> {
+    let result
+    try {
+        result = await webauthn.client.register("user", data.challenge, data.registerOptions);
+        console.log(result);
+    } catch(e) {
+        console.warn(e)
+    }
+  
+    const cordinates = await getCordinates(result?.credential.publicKey);
+
+    const webauthnData: WebAuthn = {        
+        credentialId: result?.credential.id as string,
+        pubkey: result?.credential.publicKey as string,
+        authenticatorData: result?.authenticatorData as string, 
+        clientData: result?.clientData as string,
+        signature: ""
+    }
+
+    return [webauthnData, cordinates]
+}
 
 export async function authenticate(_credentialId:string):Promise<ethers.BytesLike | undefined> {
     try {
@@ -89,5 +112,27 @@ export function bufferToHex (buffer: ArrayBufferLike):string {
     return ("0x").concat([...new Uint8Array (buffer)]
       .map (b => b.toString (16).padStart (2, "0"))
       .join (""));
+}
+
+
+async function getKey(pubkey:ArrayBufferLike) {
+    const algoParams = {
+        name: 'ECDSA',
+        namedCurve: 'P-256',
+        hash: 'SHA-256',
+      };
+  return await crypto.subtle.importKey('spki', pubkey, algoParams, true, ['verify'])
+}
+
+async function getCordinates(pubkey:string | undefined):Promise<ethers.BigNumber[]> {
+    const pubKeyBuffer = bufferFromBase64(pubkey as string);
+    const rawPubkey = await crypto.subtle.exportKey("jwk", await getKey(pubKeyBuffer))
+    const { x, y } = rawPubkey;
+    const pubkeyUintArray = [ 
+    ethers.BigNumber.from(bufferToHex(bufferFromBase64(x as string))),
+    ethers.BigNumber.from(bufferToHex(bufferFromBase64(y as string)))
+   ]
+
+   return pubkeyUintArray
 }
 
