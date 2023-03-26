@@ -59,3 +59,7 @@ cd frontend
 yarn
 yarn start
 ```
+
+### ceveats
+
+zksync has recently launch zksync era and many changes have been made in dependencies. check: https://era.zksync.io/docs/dev/troubleshooting/changelog.html
