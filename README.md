@@ -44,7 +44,9 @@ yarn hardhat compile
 yarn hardhat deploy-zksync --script deploy/deploy.ts
 ```
 
-### copy&paste deployed address to frontend/src/scripts/utils/address/ts
+### Preparetion for frontend
+
+copy&paste deployed address to frontend/src/scripts/utils/address/ts
 
 ```shell
 webauthn: "0x4B5DF730c2e6b28E17013A1485E5d9",
