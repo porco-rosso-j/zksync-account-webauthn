@@ -76,7 +76,7 @@ contract WebAuthn is EllipticCurve {
         uint clientChallengeDataOffset,
         uint[2] memory rs,
         uint[2] memory coordinates
-    ) internal pure returns (bool) {
+    ) public pure returns (bool) {
         if (
             !checkSignature(
                 authenticatorData,

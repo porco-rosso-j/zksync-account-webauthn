@@ -285,10 +285,10 @@ export default function Account({AccountInfo,setAccountInfo} : Props) {
                     AccountInfo.WebAuthnInfo
                   ) : console.log("number not set") ;
 
-                  const rawQuote = await provider.getBalance(AccAddress);
+                  const rawQuote = await provider.getBalance(recepient);
                   console.log("rawQuote: ", rawQuote)
                   let balance = Number(rawQuote) / 10 ** 18;
-                  setEtherBalance(balance);
+                  setEtherBalance2(balance);
                 }} >
                  Send ETH
           </Button>

@@ -10,7 +10,13 @@ export default async function deployAll (hre: HardhatRuntimeEnvironment) {
     const provider = new Provider("http://localhost:3050", 270);
     const wallet = new Wallet(rich_wallet[0].privateKey, provider);
     const deployer = new Deployer(hre, wallet);
+
+    // Deploy Webauthn
+    const webauthnArtifact = await deployer.loadArtifact('WebAuthn');
+    const webauthn = await deployer.deploy(webauthnArtifact, [])
     
+        console.log(`webauthn: "${webauthn.address}",`)
+
     // Deploy AccountFactory
     const factoryArtifact = await deployer.loadArtifact("AccountFactory");
     const accountArtifact = await deployer.loadArtifact("Account");
@@ -18,7 +24,7 @@ export default async function deployAll (hre: HardhatRuntimeEnvironment) {
 
     const factory = <Contract>(await deployer.deploy(
         factoryArtifact, 
-        [bytecodeHash], 
+        [bytecodeHash, webauthn.address], 
         undefined, 
         [accountArtifact.bytecode,])
         );

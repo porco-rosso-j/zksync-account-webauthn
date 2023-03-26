@@ -12,8 +12,10 @@ import "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import "./webauthn/WebAuthn.sol";
 import "./position/Position.sol";
 
-contract Account is IAccount, IERC1271, WebAuthn, Position {
+contract Account is IAccount, IERC1271, Position {
     using TransactionHelper for Transaction;
+
+    WebAuthn public webauthn;
 
     bytes32 public maxValue =
         0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
@@ -57,8 +59,9 @@ contract Account is IAccount, IERC1271, WebAuthn, Position {
     }
 
     /// @param _coordinates:fsdf
-    constructor(uint[2] memory _coordinates) {
+    constructor(uint[2] memory _coordinates, address _webauthn) {
         coordinates = _coordinates;
+        webauthn = WebAuthn(_webauthn);
     }
 
     // ---------------------------------- //
@@ -145,9 +148,9 @@ contract Account is IAccount, IERC1271, WebAuthn, Position {
             string memory clientChallenge,
             uint clientChallengeDataOffset,
             uint[2] memory rs
-        ) = decodeSignature(_signature);
+        ) = webauthn.decodeSignature(_signature);
 
-        bool verificationResult = validate(
+        bool verificationResult = webauthn.validate(
             authenticatorData,
             authenticatorDataFlagMask,
             clientData,
