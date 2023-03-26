@@ -1,49 +1,23 @@
-import { ReactNode, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import {
   Flex,
   Menu,
-  Image,
   useColorMode,
   VStack,
-  useDisclosure,
-  Switch,
   Spacer,
-  useMediaQuery
+  Image,Text
 } from "@chakra-ui/react";
+import logo from '../assets/logo.svg';
 
-import AccountModal from "./Modal/AccountModal";
-import ConnectButton from "./ConnectButton";
-import {AccountInfo} from "../scripts/interfaces/AccountInterface"
+import {IoBulb} from "react-icons/io5";
 
-type Props = {
-  children?: ReactNode;
-  AccountInfo: AccountInfo;
-  setAccountInfo: any;
-};
 
 // 
-export default function Layout({ children, AccountInfo, setAccountInfo }: Props) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+export default function Layout() {
   const { colorMode, toggleColorMode } = useColorMode();
   const [isDarkMode, setIsDarkMode] = useState(colorMode === "dark");
-  const [isScreenFullWidth] = useMediaQuery("(min-width: 435px)");
-  const [isScreenMediumWidth] = useMediaQuery("(min-width: 400px)");
-  const [isScreenSmallWidth] = useMediaQuery("(min-width: 380px)");
 
-  function getFontSize() {
-    return isScreenFullWidth ? "md" : "sm";
-  }
 
-  function getLogoSize() {
-    if (isScreenFullWidth) {
-      return "8rem";
-    } else if (isScreenMediumWidth) {
-      return "7rem";
-    } else if (isScreenSmallWidth) {
-      return "6rem";
-    }
-    return "5rem";
-  }
 
   useEffect(() => setIsDarkMode(colorMode === "dark"), [colorMode]);
 
@@ -51,32 +25,19 @@ export default function Layout({ children, AccountInfo, setAccountInfo }: Props)
     
     <Menu>
       <Flex alignItems="center" mx="1.5rem" mt="1.5rem">
+      <Image src={logo} alt={'logo'} w={"70px"} h={"70px"} />
+      <Text>
+      Bye Bye Private Key
+      </Text>
         <Spacer />
-        <VStack spacing={4}>
-          <Switch
-            colorScheme="green"
-            onChange={toggleColorMode}
-            isChecked={isDarkMode}
-            fontSize={getFontSize()}
-            fontWeight="400"
+        <VStack spacing={2}>
+          <IoBulb
+            size="30px"
+            onClick={toggleColorMode}
             color={isDarkMode ? "white" : "black"}
           >
-            Switch to {isDarkMode ? "light" : "dark"} mode
-          </Switch>
-          <ConnectButton
-            handleOpenModal={onOpen} 
-            fontSize={getFontSize()} 
-            AccountInfo={AccountInfo}
-             />
-
+          </IoBulb>
         </VStack>
-
-        <AccountModal 
-        isOpen={isOpen}
-        onClose={onClose}
-        AccountInfo={AccountInfo}
-        setAccountInfo={setAccountInfo}
-        />
       </Flex>
     </Menu>
   );
