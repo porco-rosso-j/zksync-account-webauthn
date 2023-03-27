@@ -1,6 +1,6 @@
 ## Overview
 
-This is the submission for Scaling Ethereum hackathon held by ETHGlobal.  
+This is the submission for the Scaling Ethereum hackathon held by ETHGlobal.  
 see: https://ethglobal.com/showcase/bye-bye-private-key-wm3aa
 
 ## Contracts
@@ -9,13 +9,13 @@ see: https://ethglobal.com/showcase/bye-bye-private-key-wm3aa
 | ------------------ | -------------------------------------------------------------------------------------- |
 | Account.sol        | zkSync Account Abstraction Wallet                                                      |
 | AccountFactory.sol | Deployer of Account.sol                                                                |
-| WebAuthn.sol       | handles values given by webauthn and produce `message` for validation in EllipticCurve |
-| EllipticCurve.sol  | verify message and signature with publickey. ECDSA256 & p256 curve                     |
+| WebAuthn.sol       | handles values given by webauthn and produces `message` for validation in EllipticCurve |
+| EllipticCurve.sol  | verifies message and signature with publickey. ECDSA256 & p256 curve                     |
 | Paymaster.sol      | sponsor for accounts' meta-transaction                                                 |
 
 ## Development
 
-### setup
+### Setup
 
 ```shell
 git clone git@github.com:porco-rosso-j/zksync-account-webauthn.git
@@ -25,7 +25,7 @@ yarn
 
 ### Run zksync local network
 
-docker should be run first.
+Docker should be run first.
 
 ```shell
 git clone https://github.com/matter-labs/local-setup.git
@@ -35,9 +35,9 @@ cd local-setup
 
 ### Deployment
 
-create .env file and add the line `NODE_ENV="test"`.
+Create .env file and add the line `NODE_ENV="test"`.
 
-then run:
+Then run:
 
 ```shell
 yarn hardhat compile
@@ -46,7 +46,7 @@ yarn hardhat deploy-zksync --script deploy/deploy.ts
 
 ### Preparetion for frontend
 
-copy&paste deployed address to frontend/src/scripts/utils/address/ts
+Copy and paste deployed addresses to frontend/src/scripts/utils/address/ts
 
 ```shell
 webauthn: "0x4B5DF730c2e6b28E17013A1485E5d9",
@@ -54,7 +54,7 @@ factory: "0x996462e0eAf00bF6BF0Ea15F29d715C0eD3906F1",
 paymaster: "0x1A2894885076934dAf5a398Ff216c6d665707bbA",
 ```
 
-### run frontend
+### Run frontend
 
 ```shell
 cd frontend
@@ -62,6 +62,6 @@ yarn
 yarn start
 ```
 
-### ceveats
+### Caveats
 
-zksync has recently launch zksync era and many changes have been made in dependencies. check: https://era.zksync.io/docs/dev/troubleshooting/changelog.html
+zkSync has recently launched zkSync Era and many changes have been made in the dependencies. check: https://era.zksync.io/docs/dev/troubleshooting/changelog.html
