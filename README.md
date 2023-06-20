@@ -3,6 +3,11 @@
 This is the submission for Scaling Ethereum hackathon held by ETHGlobal.  
 see: https://ethglobal.com/showcase/bye-bye-private-key-wm3aa
 
+### caveat
+
+This implementation currently doesn't work as zkSync Era limits the max transaction gas limit to 300,000. 
+Plus, the network introduces many changes in dependencies that might cause lots of dep errors. check: https://era.zksync.io/docs/dev/troubleshooting/changelog.html
+
 ## Contracts
 
 | contract           | Description                                                                            |
@@ -62,6 +67,4 @@ yarn
 yarn start
 ```
 
-### ceveats
 
-zksync has recently launch zksync era and many changes have been made in dependencies. check: https://era.zksync.io/docs/dev/troubleshooting/changelog.html
